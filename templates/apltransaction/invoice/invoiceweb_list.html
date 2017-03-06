@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load widget_tweaks %}
 
-{% block title %}Invoice In{% endblock %}
+{% block title %}Invoice In Web{% endblock %}
 
-{% block heading %}Invoice In{% endblock %}
+{% block heading %}Invoice In Web{% endblock %}
 
 {% block content %}
 <div class="col-md-6">
@@ -253,7 +253,7 @@
             {% endfor %}
         </table>
         </form>
-    {% include "pagination_admin.html" with page=invoices %}
+    {% include "apltransaction/invoice/pagination.html" with page=invoices %}
 </div>
 {% endblock %}
 

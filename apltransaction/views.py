@@ -50,9 +50,6 @@ from aplbillship.models import Billing, Shipping
 from apltransaction.models import InvoiceStatus
 
 
-def dashboard(request):
-    return render(request, 'apltransaction/dashboard.html', {})
-
 
 ## =============================================================================
 ##                                  INVOICE (GENERAL)
@@ -171,48 +168,6 @@ def ajax_invoice_remove_hold_and_invalid(request):
 ##                                  INVOICE STORE                                       
 ## =============================================================================
 
-# class InvoiceStoreList(View):
-#     template = 'apltransaction/invoice/invoice_store_list.html'
-
-#     def get(self, request):
-#         # Ambil semua invoice yang statusnya store valid
-#         invoices_store = Invoice.objects.filter(category__abbv='S')\
-#                             .exclude(Q(transactiondetail=None))\
-#                             .order_by('-invoice_date')
-
-#         # Menangani pencarian invoice store
-#         invoices_store = self._searching(request, invoices_store)
-
-#         # Menangani pemfilteran invoice store berdasarkan statusnya
-#         invoices_store = self._filtering(request, invoices_store)
-
-
-#     def _searching(self, request, invoices_store):
-#         if 'query' in request.GET:
-#             form = FormInvoiceStoreListSearching(request.GET)
-
-#             if form.is_valid():
-#                 query = form.cleaned_data['query']
-#                 queries = Q(invoice_number__icontains=query) |
-#                           Q(user__username__icontains=query) |
-#                           Q(transactiondetail__article_name__icontains=query) |     
-#                           Q(category__abbv__icontains=query)
-
-#                 invoices_store = invoices_store.filter(queries)
-
-#         return invoices_store
-
-    def _filtering(self, request, invoices_store):
-        if 'status' in request.GET:
-            status = request.GET.get('status')
-            invoice_status = get_object_or_404(InvoiceStatus, abbv=status)
-            invoices_store = invoice_status.filter(status=invoice_status)
-
-        return invoices_store
-
-    def _paginating(self, invoices_store, limit):
-        pass
-
 
 def invoicestore_list(request):
     invoices = Invoice.objects.filter(category__abbv='S').exclude(Q(transactiondetail=None)).order_by('-invoice_date')
@@ -270,6 +225,7 @@ def invoicestore_add(request):
     return HttpResponseRedirect(
         reverse('apltransaction:transactiondetailstore_add', 
             kwargs={'invoice_number': invoice.invoice_number}))
+
 
 def invoicestore_remove(request, invoice_number):
     invoice = get_object_or_404(Invoice, invoice_number=invoice_number)
@@ -479,11 +435,13 @@ def transactiondetailstore_remove(request, invoice_number, article_code):
 ## ======================================================================================
 ##                                  INVOICE WEB
 ## ======================================================================================
+@connecting_brand_required
 def invoiceweb_list(request):
+    brand = helper_session_brand_pk(request)
     if request.user.is_superuser:
         invoices = Invoice.objects.exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
     else:
-        invoices = Invoice.objects.filter(user=request.user).exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
+        invoices = Invoice.objects.distinct().filter(user=request.user, transactiondetail__article_brand_name=brand.name).exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
     form = FormSearchInvoice()
 
     # =================================
@@ -820,7 +778,6 @@ def invoiceweb_print_all(request):
 
             # Jika invoice valid
             if valid:
-
                 data_context = {'invoices': invoices, 'brand': brand}
                 return render(request, 'apltransaction/invoice/invoiceweb_print_all.html', data_context)
             
@@ -1023,19 +980,5 @@ def transactiondetailweb_remove(request, invoice_number, article_code):
     # kembali ke halaman transaction detail web
     data_kwargs = {'invoice_number': invoice_number}
     return HttpResponseRedirect(reverse('apltransaction:transactiondetailweb_add', kwargs=data_kwargs))
-
-
-## ======================================================================================
-##                                  INVOICE STORE BARCODE
-## ======================================================================================
-def invoicestorebarcode_add(request):
-    invoice = Invoice(user=request.user,
-                      invoice_number=helper_generate_code(),
-                      total=0,
-                      category='S', # Store
-                      status='F') # Finish
-    invoice.save()
-    return HttpResponseRedirect(reverse('apltransaction:transactiondetailstorebarcode_add',
-                                        kwargs={'invoice_number': invoice.invoice_number}))
 
 

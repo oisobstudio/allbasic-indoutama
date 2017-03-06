@@ -69,10 +69,10 @@
 
 {% for invoice in invoices %}
 <div class="container-fluid" id="limitborder">
-	<img src="{{ brand.logo.url }}">
+	
 	<table>
 		<tr>
-			<th colspan="2" style="font-size: 13pt;"><i class="glyphicon glyphicon-shopping-cart"></i> {{ brand.name }} Store</th>
+			<th colspan="2" style="font-size: 13pt;"><i class="glyphicon glyphicon-shopping-cart"></i> {{ invoice.transactiondetail_set.first.article_brand_name }} Store</th>
 		</tr>
 		<tr>
 			<td>

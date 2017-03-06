@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.db.models import Sum, Count, Q
+from django.db.models import When, F, Q, Sum, Count, IntegerField, Case
 from django.views.generic import View
 
 import datetime
@@ -15,6 +15,7 @@ class Dashboard(View):
 	def get(self, request):
 		self._dataset_total_article_by_brand()
 		self._dataset_total_article_by_size()
+		self._dataset_sale_admin_performance()
 		return render(request, self.template, self.data_context)
 
 	def _dataset_total_article_by_brand(self):
@@ -38,6 +39,30 @@ class Dashboard(View):
 
 		self.data_context['dataset_total_article_in_brand_size'] = json.dumps(dataset_total_article_in_brand_size)
 
+	def _dataset_sale_admin_performance(self):
+
+		total_invoice_per_status = TransactionDetail.objects.values('user__username').annotate(
+			hold=Sum(
+				Case(When(invoice__status__abbv='H', then=1), output_field=IntegerField())
+			),
+			process=Sum(
+				Case(When(invoice__status__abbv='P', then=1), output_field=IntegerField())
+			),
+			ready=Sum(
+				Case(When(invoice__status__abbv='R', then=1), output_field=IntegerField())
+			),
+			pending=Sum(
+				Case(When(invoice__status__abbv='G', then=1), output_field=IntegerField())
+			),
+			cancel=Sum(
+				Case(When(invoice__status__abbv='C', then=1), output_field=IntegerField())
+			),
+			finish=Sum(
+				Case(When(invoice__status__abbv='F', then=1), output_field=IntegerField())
+			)
+		)
+
+		self.data_context['dataset_sale_admin_performance'] = total_invoice_per_status
 
 
 

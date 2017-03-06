@@ -1,169 +1,144 @@
-{% extends "base_admin.html" %}
+{% extends "base.html" %}
 {% load staticfiles %}
 {% load widget_tweaks %}
 
 {% block title %}Add Shipping{% endblock %}
 
-{% block company_header %}All Basic Store{% endblock %}
+{% block heading %}Add Shipping{% endblock %}
 
-{% block page_header %}Add Shipping <small>{{ invoice.invoice_number }}</small>{% endblock %}
 
-{% block style %}
-<link rel="stylesheet" href="{% static 'vendors/EasyAutocomplete-1.3.5/easy-autocomplete.min.css' %}" type="text/css" />
-<link rel="stylesheet" href="{% static 'vendors/EasyAutocomplete-1.3.5/easy-autocomplete.themes.min.css' %}" type="text/css" />
-{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <table class="table table-bordered">
-            <tr>
-                <th>Invoice Number</th>
-                <td>{{ invoice.invoice_number }}</td>
-            </tr>
-            <tr>
-                <th>Total</th>
-                <td id="total" data-total="{{ invoice.total }}">{{ invoice.total }}</td>
-            </tr>
-        </table>
-    </div>
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th>Invoice Number</th>
+            <td>{{ invoice.invoice_number }}</td>
+        </tr>
+        <tr>
+            <th>Total</th>
+            <td id="total" data-total="{{ invoice.total }}">{{ invoice.total }}</td>
+        </tr>
+    </table>
 </div>
-    <br>
-<div class="row">
-    <div class="col-md-12">
-        <form action="" method="post" role="form">
-            {% csrf_token %}
-            {{ form.non_field_errors }}
 
-            <input type="hidden" value="{{ state_rajaongkir.id }}" name="id_state_city">
+<br>
 
-            <div class="form-group">
-                <label for="{{ form.province.id_for_label }}">Province:</label>
-                {{ form.province|add_class:'form-control' }}
-                {% if form.province.errors %}
-                    {% for error in form.province.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+<div class="col-md-12">
+    <form action="" method="post" role="form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
 
-            <div class="form-group">
-                <label for="{{ form.city.id_for_label }}">City:</label>
-                {{ form.city|add_class:'form-control' }}
-                {% if form.city.errors %}
-                    {% for error in form.city.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <div class="form-group">
+            <label for="{{ form.province.id_for_label }}">Province:</label>
+            {{ form.province|add_class:'form-control' }}
+            {% if form.province.errors %}
+                {% for error in form.province.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.vendor.id_for_label }}">Vendor:</label>
-                {{ form.vendor|add_class:'form-control' }}
-                {% if form.vendor.errors %}
-                    {% for error in form.vendor.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <div class="form-group">
+            <label for="{{ form.city.id_for_label }}">City:</label>
+            {{ form.city|add_class:'form-control' }}
+            {% if form.city.errors %}
+                {% for error in form.city.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.pack.id_for_label }}">Package:</label>
-                {{ form.pack|add_class:'form-control' }}
-                {% if form.pack.errors %}
-                    {% for error in form.pack.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <div class="form-group">
+            <label for="{{ form.vendor.id_for_label }}">Vendor:</label>
+            {{ form.vendor|add_class:'form-control' }}
+            {% if form.vendor.errors %}
+                {% for error in form.vendor.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.price.id_for_label }}">Price:</label>
-                {{ form.price|add_class:'form-control' }}
-                {% if form.price.errors %}
-                    {% for error in form.price.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
+        <div class="form-group">
+            <label for="{{ form.pack.id_for_label }}">Package:</label>
+            {{ form.pack|add_class:'form-control' }}
+            {% if form.pack.errors %}
+                {% for error in form.pack.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-            <div class="form-group">
-                <label for="{{ form.address.id_for_label }}">Address:</label>
-                {{ form.address|add_class:'form-control' }}
-                {% if form.address.errors %}
-                    {% for error in form.address.errors %}
-                        <span class="help-block text-danger">{{ error|escape }}</span>
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <input type="hidden" id="city_province">
+        <div class="form-group">
+            <label for="{{ form.price.id_for_label }}">Price:</label>
+            {{ form.price|add_class:'form-control' }}
+            {% if form.price.errors %}
+                {% for error in form.price.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
+        <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Address:</label>
+            {{ form.address|add_class:'form-control' }}
+            {% if form.address.errors %}
+                {% for error in form.address.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-            <button type="submit" class="btn btn-primary">Save & Complete</button>
-            <a href="{% url 'aplbillship:shipping_add_manual' invoice.invoice_number %}" class="btn btn-warning">Add Manual Shipping</a>
-            <a href="{% url 'apltransaction:transactiondetailweb_add' invoice.invoice_number %}" class="btn btn-default">Back To Invoice</a>
-        </form>
-        <br>
+        <button type="submit" class="btn btn-primary">Save & Complete</button>
+        <a href="{% url 'apltransaction:transactiondetailweb_add' invoice.invoice_number %}" class="btn btn-default">Back To Invoice</a>
+    </form>
+</div>
+
+<!-- ================ -->
+<!-- JNE modal widget -->
+<!-- ================ -->
+<div class="modal fade" id="myModalJNE" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">JNE</h4>
+      </div>
+      <div class="modal-body">
+        <div data-theme="light" id="rajaongkir-widget"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
     </div>
+  </div>
+</div>
+
+<!-- ==================== -->
+<!-- SICEPAT modal widget -->
+<!-- ==================== -->
+<div class="modal fade" id="myModalSICEPAT" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Sicepat</h4>
+      </div>
+      <div class="modal-body">
+        <div data-origin="CGK" data-theme="light" id="sicepat-widget"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 
-{% block script %}
-    <script src="{% static 'vendors/EasyAutocomplete-1.3.5/jquery.easy-autocomplete.min.js' %}"></script>
-    <script>
 
-        var uriProvince = "{% url 'aplbillship:ajax_getallprovince' %}";
-        var optionsProvince = {
-            url: uriProvince,
-            getValue: function(element) {
-                // GET CITY SUGGESTION
-                $("#id_city").val();
-                var uriCity = "{% url 'aplbillship:ajax_getallcity' 344444 %}";
-                uriCity = uriCity.replace('344444', element.province_id);
-                var optionsCity = {
-                    url: uriCity,
-                    getValue: function (element) {
-                        $("#id_vendor").val('jne');
-                        // GET PACKAGE FROM JNE
-                        var uriPackage = "{% url 'aplbillship:ajax_getpackage' 'A00B' 3444 3555 %}";
-                        uriPackage = uriPackage.replace('A00B', '{{ invoice.invoice_number }}')
-                        uriPackage = uriPackage.replace('3444', element.city_id);
-                        uriPackage = uriPackage.replace('3555', $("#id_vendor").val());
-
-                        console.log(uriPackage);
-                        var optionsPackage = {
-                            url: uriPackage,
-                            getValue: function(element) {
-                                $("#id_price").val(element.cost[0].value);
-                                // set total
-                                var shipPrice = $("#id_price").val();
-                                var totalPrice = $("#total").data('total');
-                                $("#total").html(parseInt(shipPrice) + parseInt(totalPrice));
-                                return element.service
-                            },
-                            list: {match: {enabled: true}},
-                        };
-                        $("#id_pack").easyAutocomplete(optionsPackage);
-                        return element.city_name;
-                    },
-                    list: {match: {enabled: true}},
-                };
-
-                 $("#id_city").easyAutocomplete(optionsCity);
-	            return element.province;
-            },
-            list: {
-                match: {
-                    enabled: true
-                }
-            }
-        };
-
-        $("#id_province").easyAutocomplete(optionsProvince);
-
-
-
-
-
-    </script>
+{% block js %}
+<script type="text/javascript" src="//rajaongkir.com/script/widget.js"></script>
+<script type="text/javascript" src="http://widget.sicepat.com/script.js"></script>
 {% endblock %}

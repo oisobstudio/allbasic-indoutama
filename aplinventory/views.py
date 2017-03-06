@@ -490,7 +490,7 @@ def articledetail_add(request, pk_article, pk_sizecategory):
     else:
         form = FormAddArticleDetail(sizes)
 
-    return render(request, 'aplinventory/articledetail/article_add.html',
+    return render(request, 'aplinventory/articledetail/articledetail_add.html',
                   {'form': form, 'article': article, 'articledetails': articledetails})
 
 

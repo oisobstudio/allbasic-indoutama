@@ -7,6 +7,8 @@ from .forms import FormAccountLogin
 
 
 def account_login(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('aplbase:dashboard'))
     if request.method == 'POST':
         form = FormAccountLogin(request.POST)
 

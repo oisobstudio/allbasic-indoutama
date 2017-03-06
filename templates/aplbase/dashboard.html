@@ -11,7 +11,69 @@
 {% endblock %}
 
 {% block content %}
-<div class="col-md-6">
+<div class="col-md-3">
+	<h4 style="margin-left: 50px;">Total Stock Article In Brand</h4>
+	<canvas height="400" style="width: auto;" id="dataset_total_article_by_brand"></canvas>
+</div>
+<div class="col-md-8">
+	<h4>Informasi Performa Admin</h4>
+	<table class="table table-striped table-condensed">
+		<tr>
+			<th>User (Admin)</th>
+			<th>Hold</th>
+			<th>Process</th>
+			<th>Ready</th>
+			<th>Pending</th>
+			<th>Cancel</th>
+			<th>Finish</th>
+		</tr>
+		{% for admin_performance in dataset_sale_admin_performance %}
+		<tr>
+			<td>{{ admin_performance.user__username }}</td>
+			{% if admin_performance.hold %}
+				<td>{{ admin_performance.hold }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+
+			{% if admin_performance.process %}
+				<td>{{ admin_performance.process }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+
+			{% if admin_performance.ready %}
+				<td>{{ admin_performance.ready }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+
+			{% if admin_performance.pending %}
+				<td>{{ admin_performance.pending }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+
+			{% if admin_performance.cancel %}
+				<td>{{ admin_performance.cancel }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+
+			{% if admin_performance.finish %}
+				<td>{{ admin_performance.finish }}</td>
+			{% else %}
+				<td>-</td>
+			{% endif %}
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+
+<br>
+<br>
+
+<div class="col-md-12">
 	<h4>Total Stock Article</h4>
 	<table id="id_dataset_total_article_in_brand_size" class="display table" cellspacing="0" width="100%">
 		<thead>
@@ -33,18 +95,6 @@
 	</table>
 </div>
 
-<div class="col-md-4">
-	<h4 style="margin-left: 50px;">Total Stock Article In Brand</h4>
-	<canvas height="400" id="dataset_total_article_by_brand"></canvas>
-</div>
-
-<div class="container">
-	<div id="inbox"></div>
-</div>
-  <form id="messageform">
-     <textarea id="message"></textarea>
-  </div>
-  <button id="disconnect">Disconnect</button>
 {% endblock %}
 
 {% block js %}

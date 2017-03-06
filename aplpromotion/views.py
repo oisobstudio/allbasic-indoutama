@@ -13,7 +13,7 @@ from .forms import FormDiscountChange
 
 
 class DiscountList(View):
-	template = 'aplpromotion/discount/DiscountList.html'
+	template = 'aplpromotion/discount/discount_list.html'
 
 	@method_decorator(login_required)
 	def dispatch(self, *args, **kwargs):
@@ -30,7 +30,7 @@ class DiscountList(View):
 
 class DiscountAdd(View):
 	form_discount_add = FormDiscountAdd
-	template = 'aplpromotion/discount/DiscountAdd.html'
+	template = 'aplpromotion/discount/discount_add.html'
 
 	@method_decorator(login_required)
 	def dispatch(self, *args, **kwargs):
@@ -56,7 +56,7 @@ class DiscountAdd(View):
 
 class DiscountChange(View):
 	form_discount_change = FormDiscountChange
-	template = 'aplpromotion/discount/DiscountChange.html'
+	template = 'aplpromotion/discount/discount_change.html'
 
 	@method_decorator(login_required)
 	def dispatch(self, *args, **kwargs):

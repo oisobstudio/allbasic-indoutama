@@ -2,9 +2,9 @@
 {% load staticfiles %}
 {% load widget_tweaks %}
 
-{% block title %}Invoice In Store{% endblock %}
+{% block title %}Invoice In Web{% endblock %}
 
-{% block heading %}Invoice In Store{% endblock %}
+{% block heading %}Invoice In Web{% endblock %}
 
 {% block content %}
 <div class="col-md-6">
@@ -264,7 +264,7 @@
         <tr>
             <td colspan="8">
                 Please, add your shipping 
-                <a href="{% url 'aplbillship:shipping_add_manual' invoice.invoice_number %}" class="text-primary">
+                <a href="{% url 'aplbillship:shipping_add' invoice.invoice_number %}" class="text-primary">
                     add
                 </a>
             </td>
