@@ -1,0 +1,66 @@
+{% extends "base_admin.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Adding Profile{% endblock %}
+
+{% block company_header %}All Basic Store{% endblock %}
+
+{% block page_header %}Added profile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">Form added profile {{ user.username }}</div>
+            <div class="panel-body">
+                <form action="" method="post" class="col-lg-8" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    <div class="form-group">
+                        <label for="{{ form.nickname.id_for_label }}">Nickname :</label>
+                        {{ form.nickname|add_class:'form-control' }}
+                        {% if form.nickname.errors %}
+                            {% for error in form.nickname.errors %}
+                                <span class="help-block text-danger">{{ error|escape }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.team.id_for_label }}">Team :</label>
+                        {{ form.team|add_class:'form-control' }}
+                        {% if form.team.errors %}
+                            {% for error in form.team.errors %}
+                                <span class="help-block text-danger">{{ error|escape }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.level.id_for_label }}">Level :</label>
+                        {{ form.level|add_class:'form-control' }}
+                        {% if form.level.errors %}
+                            {% for error in form.level.errors %}
+                                <span class="help-block text-danger">{{ error|escape }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="{{ form.photo.id_for_label }}">Photo :</label>
+                        {{ form.photo|add_class:'form-control' }}
+                        {% if form.photo.errors %}
+                            {% for error in form.photo.errors %}
+                                <span class="help-block text-danger">{{ error|escape }}</span>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    <input type="submit" value="Save profile" class="btn btn-success">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

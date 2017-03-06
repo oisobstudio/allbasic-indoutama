@@ -1,0 +1,10 @@
+*.pyc
+*~
+__pycache__
+myvenv
+dms-env
+db.sqlite3
+media
+.DS_Store
+pos-clothing-store/*
+pos_env/

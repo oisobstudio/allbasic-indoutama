@@ -1,0 +1,28 @@
+
+{% extends "base_admin.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Invoice App{% endblock %}
+
+{% block company_header %}All Basic Store{% endblock %}
+
+{% block page_header %}Invoice App{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<table class="table table-bordered">
+			<tr>
+				<th>#</th>
+				<th>Name</th>
+				<th>Action</th>
+			</tr>
+			<tr>
+				<td>1</td>
+				<td>Invoice Sale</td>
+				<td><a href="{% url 'apltransaction:invoice_list' %}">Access</a></td>
+			</tr>
+		</table>
+	</div>
+</div>
+{% endblock %}

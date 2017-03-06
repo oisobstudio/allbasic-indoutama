@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}Product Category List{% endblock %}
+
+{% block heading %}Product Category{% endblock %}
+
+{% block content %}
+<div class="col-lg-6">
+    <a href="{% url 'aplinventory:productcategory_add' %}">add new</a>
+</div>
+<div class="col-lg-6"></div>
+
+<div class="col-lg-12">
+    <table class="table table-bordered">
+        <tr>
+            <th>#</th>
+            <th>Brand</th>
+            <th>Size Type</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        {% for productcategory in productcategories %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ productcategory.brand }}</td>
+                <td>{{ productcategory.sizecategory.name }}</td>
+                <td>{{ productcategory.name }}</td>
+                <td>
+                    <a href="{% url 'aplinventory:productcategory_change' productcategory.pk %}">
+                        change
+                    </a> |
+                    <a href="{% url 'aplinventory:productcategory_remove' productcategory.pk %}">
+                        remove
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="4">Your product type has not added.</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

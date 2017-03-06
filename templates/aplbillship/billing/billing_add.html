@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Add Billing{% endblock %}
+
+{% block heading %}Add Billing{% endblock %}
+
+{% block content %}
+<div class="col-md-12">
+    <form action="" method="post" role="form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Name:</label>
+            {{ form.name|add_class:'form-control' }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.phone.id_for_label }}">Phone:</label>
+            {{ form.phone|add_class:'form-control' }}
+            {% if form.phone.errors %}
+                {% for error in form.phone.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.email.id_for_label }}">Email:</label>
+            {{ form.email|add_class:'form-control' }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'apltransaction:transactiondetailweb_add' invoice.invoice_number %}" class="btn btn-default">Back To Invoice</a>
+    </form>
+    <br>
+</div>
+{% endblock %}

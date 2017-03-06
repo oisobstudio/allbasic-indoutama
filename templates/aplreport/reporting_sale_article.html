@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load thumbnail %}
+{% load widget_tweaks %}
+
+{% block title %}Reporting Sale Article{% endblock %}
+
+{% block heading %}Reporting Sale Article{% endblock %}
+
+{% block content %}
+<br><br><br><br><br><br><br><br>
+<div class="col-md-12">
+    <form class="form-inline" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="">From</label>
+            {{ form.from_date|add_class:'form-control input-lg' }}
+        </div>
+        <div class="form-group">
+            <label for="">To</label>
+            {{ form.to_date|add_class:'form-control input-lg' }}
+        </div>
+        <button type="submit" class="btn btn-default">Show</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript" src="{% static 'sbadmin/dist/js/bootstrap-datepicker.min.js' %}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var date_input_from_date = $('input[name="from_date"]'); //our date input has the name "date"
+            var date_input_to_date = $('input[name="to_date"]'); //our date input has the name "date"
+            var container = $('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            var options={
+                format: 'yyyy-mm-dd',
+                container: container,
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'bottom'
+            };
+          
+            date_input_from_date.datepicker(options);
+            date_input_to_date.datepicker(options);
+        })
+    </script>
+{% endblock %}

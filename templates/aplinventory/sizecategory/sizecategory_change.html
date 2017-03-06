@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Change Size Category{% endblock %}
+
+{% block heading %}Change Size Category{% endblock %}
+
+{% block content %}
+<div class="col-lg-12">
+    <form action="" method="post" class="col-lg-8">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Name :</label>
+            {{ form.name|add_class:'form-control' }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
+</div>
+{% endblock %}

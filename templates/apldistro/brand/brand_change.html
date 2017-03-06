@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load thumbnail %}
+
+{% block title %}Changing Brand{% endblock %}
+
+{% block heading %}Brand Change{% endblock %}
+
+{% block content %}
+<div class="col-lg-8">
+    <form action="" method="post" class="col-lg-8" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Brand name:</label>
+            {{ form.name|add_class:'form-control' }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.logo.id_for_label }}">Brand logo:</label>
+            {{ form.logo|add_class:'form-control' }}
+            {% if form.logo.errors %}
+                {% for error in form.logo.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.about.id_for_label }}">About brand:</label>
+            {{ form.about|add_class:'form-control' }}
+            {% if form.about.errors %}
+                {% for error in form.about.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
+</div>
+
+<div class="col-lg-2">
+    {% thumbnail brand.logo "200" as im %}
+        <img src="{{ im.url }}" class="img-rounded">
+    {% endthumbnail %}
+</div>
+{% endblock %}

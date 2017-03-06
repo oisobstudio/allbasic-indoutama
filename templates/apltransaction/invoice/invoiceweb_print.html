@@ -1,0 +1,101 @@
+{% extends "base_admin_printinvoice.html" %}
+{% load thumbnail %}
+
+{% block title %}{{ invoice.invoice_number }} - {{ invoice.user.username }}{% endblock %}
+
+
+{% block content %}
+<br>
+<ul class="media-list">
+    <li class="media">
+        <div class="media-left">
+          <a href="#">
+            {% thumbnail brand.logo "40" as im %}
+                <img class="media-object" src="{{ im.url }}" alt="...">
+            {% endthumbnail %}
+          </a>
+        </div>
+        <div class="media-body">
+          <h4 class="media-heading">{{ brand.name }}</h4>
+          {{ brand.about }}
+        </div>
+    </li>
+</ul>
+<hr>
+
+<table class="table">
+    <tr>
+        <th>Alamat</th>
+        <th>Invoice</th>
+    </tr>
+    <tr>
+        <td>
+            {{ billing.name }}<br>
+            {{ shipping.address }}<br>
+            {{ shipping.city }}<br>
+            {{ shipping.province }}<br>
+        </td>
+        <td>
+            Order: #{{ invoice.invoice_number }}<br>
+            Tanggal: {{ invoice.invoice_date }}<br>
+            Email: {{ billing.email }}<br>
+            Telp: {{ billing.phone }}<br>
+        </td>
+    </tr>
+</table>
+
+<table class="table table-condensed">
+    <tr>
+        <th>#</th>
+        <th>Article</th>
+        <th>Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+    </tr>
+
+    {% for transdet in transactiondetails %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ transdet.article_name }} <small>Size: {{ transdet.article_size }}</small></td>
+            <td>{{ transdet.article_price }}
+                {% if transdet.discount_code %}
+                    <small>
+                    <br> discount ({{ transdet.discount_name }})
+                    <br> IDR {{ transdet.cut_price }}    
+                    </small>
+                {% endif %}
+            </td>
+            <td>{{ transdet.quantity }}</td>
+            <td>{{ transdet.sub_total }}</td>
+        </tr>
+    {% endfor %}
+
+    <tr>
+        <th colspan="4">Subtotal</th>
+        <th>IDR <span id="subtotal">{{ invoice.total }}</span></th>
+    </tr>
+    <tr>
+        <td colspan="4">Shipping ({{ shipping.vendor }}, {{ shipping.pack }})</td>
+        <td>IDR <span id="price_shipping">{{ shipping.price }}</span></td>
+    </tr>
+    <tr>
+        <th colspan="4">Total</th>
+        <th>IDR <span id="grand_total"></span></th>
+    </tr>
+</table>
+{% endblock %}
+
+
+
+{% block additional_button %}
+<a href="{% url 'apltransaction:invoiceweb_list' %}" class="btn btn-default">Back To Invoice</a> <br><br>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    var subtotal = parseInt($("#subtotal").text());
+    var price_shipping = parseInt($("#price_shipping").text());
+    $("#grand_total").text(subtotal + price_shipping);
+    window.print();
+</script>
+{% endblock %}

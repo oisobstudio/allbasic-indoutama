@@ -1,0 +1,23 @@
+<div class="navbar-default sidebar" role="navigation">
+    <div class="sidebar-nav navbar-collapse">
+
+        <ul class="nav" id="side-menu">
+            <li>
+                <a href="{% url 'apldistro:dashboard' %}"><i class="fa fa-bank"></i> Distro</a>
+            </li>
+            <li>
+                <a href="{% url 'aplinventory:dashboard' %}"><i class="fa fa-cubes"></i> Inventory</a>
+            </li>
+            <li>
+                <a href="{% url 'apltransaction:dashboard' %}"><i class="glyphicon glyphicon-list-alt"></i> Invoice</a>
+            </li>
+            <li>
+                <a href="{% url 'aplpromo:dashboard' %}"><i class="glyphicon glyphicon-flag"></i> Promo</a>
+            </li>
+            <li>
+                <a href="{% url 'aplreport:dashboard' %}"><i class="glyphicon glyphicon-book"></i> Report</a>
+            </li>
+        </ul>
+    </div>
+    <!-- /.sidebar-collapse -->
+</div>

@@ -1,0 +1,80 @@
+{% extends "base_admin_printinvoice.html" %}
+{% load thumbnail %}
+
+{% block title %}{{ invoice.invoice_number }}, {{ invoice.user.username }}{% endblock %}
+
+
+{% block content %}
+
+    <br><br>
+
+
+        <table class="table table-striped">
+            <tr>
+                <th>
+                    {% thumbnail invoice.brand.logo "50" as im %}
+                        <img src="{{ im.url }}" alt="{{ invoice.brand.name }}">
+                    {% endthumbnail %}
+                    <br>
+                    {{ invoice.brand.name }} <br>
+                    <small>{{ invoice.brand.about }}</small>
+                </th>
+                <th>
+                    <h2><i class="fa fa-shopping-bag"></i> {{ invoice.get_category_display }} Invoice</h2>
+                </th>
+                <td class="">
+                    <div class="pull-right">
+                        #{{ invoice.invoice_number }} <br>
+                        <i class="fa fa-user"></i> {{ invoice.user.username }} <br>
+                        <i class="fa fa-calendar"></i> {{ invoice.invoice_date }}
+                    </div>
+                </td>
+            </tr>
+        </table>
+    <hr>
+        <table class="table table-condensed table-bordered table-responsive">
+            <tr>
+                <th>#</th>
+                <th>Item Code</th>
+                <th>Article Name</th>
+                <th>Size</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Sub Total</th>
+            </tr>
+            {% for transdet in transactiondetails %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ transdet.article_code }}</td>
+                    <td>{{ transdet.article_name }}</td>
+                    <td>{{ transdet.article_size }}</td>
+                    <td>{{ transdet.quantity }}</td>
+                    <td>{{ transdet.article_price }}</td>
+                    <td>{{ transdet.sub_total }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th colspan="6">Grand Total</th>
+                <th>{{ invoice.total }}</th>
+            </tr>
+        </table>
+
+
+    <div class="media pull-right">
+        {% thumbnail store.logo "64" as im %}
+                <a class="media-left" href="#">
+                    <img src="{{ im.url }}" class="">
+                </a>
+        {% endthumbnail %}
+        <div class="media-body">
+            <h4 class="media-heading">{{ store.name }}, {{ store.owner }}</h4>
+            {{ store.address|linebreaks }}
+        </div>
+    </div>
+
+
+
+
+    <a href="#" onclick="window.print();" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+
+{% endblock %}

@@ -1,0 +1,296 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Invoice In Store{% endblock %}
+
+{% block heading %}Invoice In Store{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="2" class="text-center">Invoice Information</th>
+        </tr>
+        <tr>
+            <th>User</th>
+            <td>{{ invoice.user }}</td>
+        </tr>
+        <tr>
+            <th>Invoice Number</th>
+            <td>{{ invoice.invoice_number }}</td>
+        </tr>
+        <tr>
+            <th>Invoice Date</th>
+            <td>{{ invoice.invoice_date }}</td>
+        </tr>
+        <tr>
+            <th>Total</th>
+            <td>{{ invoice.total }}</td>
+        </tr>
+        <tr>
+            <th>Category</th>
+            <td>{{ invoice.category.info }}</td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td>
+                {{ invoice.status.info }}
+                
+            </td>
+        </tr>
+        <tr>
+            <th>Action</th>
+            <td>
+                <a class="btn btn-default" href="{% url 'apltransaction:invoiceweb_remove' invoice.invoice_number %}" class="text-danger">
+                    remove
+                </a>
+                <a class="btn btn-default" href="{% url 'apltransaction:invoiceweb_changestatus' invoice.invoice_number %}">
+                    change
+                </a>
+                <a class="btn btn-default" href="{% url 'apltransaction:invoiceweb_print' invoice.invoice_number %}">
+                    print
+                </a>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="col-md-6">
+    <form action="" method="post" class="">
+    {% csrf_token %}
+        {{ form.non_field_errors }}
+        <table class="table table-bordered">
+            <tr>
+                <th colspan="2" class="text-center">Form Add Article</th>
+            </tr>
+            {# transactiondetail article_code field #}
+            <tr>
+                <td><label for="{{ form.article_code.id_for_label }}">Code</label></td>
+                <td>
+                    {{ form.article_code|add_class:'form-control'|attr:'onclick:openShowArticle();'|attr:'placeholder:Choose'}}
+                    {% if form.article_code.errors %}
+                        {% for error in form.article_code.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            {# transactiondetail article_name field #}
+            <tr>
+                <td><label for="{{ form.article_name.id_for_label }}">Name</label></td>
+                <td>
+                    {{ form.article_name|add_class:'form-control' }}
+                    {% if form.article_name.errors %}
+                        {% for error in form.article_name.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><label for="{{ form.article_size.id_for_label }}">Size</label></td>
+                <td>
+                    {{ form.article_size|add_class:'form-control' }}
+                    {% if form.article_size.errors %}
+                        {% for error in form.article_size.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><label for="{{ form.article_price.id_for_label }}">Price</label></td>
+                <td>
+                    {{ form.article_price|add_class:'form-control' }}
+                    {% if form.article_price.errors %}
+                        {% for error in form.article_price.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><label for="{{ form.quantity.id_for_label }}">Quantity</label></td>
+                <td>
+                    {{ form.quantity|add_class:'form-control' }}
+                    {% if form.quantity.errors %}
+                        {% for error in form.quantity.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td><label for="{{ form.sub_total.id_for_label }}">Sub Total</label></td>
+                <td>
+                    {{ form.sub_total|add_class:'form-control' }}
+                    {% if form.sub_total.errors %}
+                        {% for error in form.sub_total.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" class="">
+                    <input type="submit" value="add" class="btn btn-success pull-right">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<br>
+
+{# ITEM TRANSACTION DETAIL #}
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="9" class="text-center">Article In Bag</th>
+        </tr>
+        <tr>
+            <th>#</th>
+            <th>Brand</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Sub Total</th>
+            <th>Action</th>
+        </tr>
+        {% for trandet in transactiondetails %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ trandet.article_brand_name }}</td>
+                <td>{{ trandet.article_code }}</td>
+                <td>{{ trandet.article_name }}</td>
+                <td>{{ trandet.article_size }}</td>
+                <td>{{ trandet.article_price }}</td>
+                <td>{{ trandet.quantity }}</td>
+                <td>{{ trandet.sub_total }}</td>
+                <td>
+                    <a href="{% url 'apltransaction:transactiondetailweb_remove' invoice.invoice_number trandet.article_code %}" class="text-danger">
+                        remove
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="9">Empty Transaction Detail</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<br>
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="6" class="text-center">Billing</th>
+        </tr>
+        <tr>
+            <th>Code</th>
+            <th>Invoice Number</th>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Action</th>
+        </tr>
+        {% if billing %}
+        <tr>
+            <td>{{ billing.code }}</td>
+            <td>{{ billing.invoice.invoice_number }}</td>
+            <td>{{ billing.name }}</td>
+            <td>{{ billing.email }}</td>
+            <td>{{ billing.phone }}</td>
+            <td>
+                <a class="text-danger" href="{% url 'aplbillship:billing_remove' invoice.invoice_number billing.code %}">
+                    remove
+                </a>
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6">
+                Please, add your billing 
+                <a class="text-primary" href="{% url 'aplbillship:billing_add' invoice.invoice_number %}">
+                    add
+                </a>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+
+<br>
+
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="8" class="text-center">Shipping</th>
+        </tr>
+        <tr>
+            <th>Code</th>
+            <th>Invoice Number</th>
+            <th>Province</th>
+            <th>City</th>
+            <th>Vendor / Courier</th>
+            <th>Package</th>
+            <th>Price</th>
+            <th>Action</th>
+        </tr>
+        {% if shipping %}
+        <tr>
+            <td>{{ shipping.code }}</td>
+            <td>{{ shipping.invoice.invoice_number }}</td>
+            <td>{{ shipping.province }}</td>
+            <td>{{ shipping.city }}</td>
+            <td>{{ shipping.vendor }}</td>
+            <td>{{ shipping.pack }}</td>
+            <td>{{ shipping.price }}</td>
+            <td>
+                <a class="text-danger" href="{% url 'aplbillship:shipping_remove' invoice.invoice_number shipping.code %}">
+                    remove
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="8">
+                <strong>Address:</strong> <br>
+                {{ shipping.address }}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="8">
+                Please, add your shipping 
+                <a href="{% url 'aplbillship:shipping_add_manual' invoice.invoice_number %}" class="text-primary">
+                    add
+                </a>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'sbadmin/vendor/coderain/coderain.js' %}"></script>
+    <script>
+        function openShowArticle() {
+            window.open(
+                    "{% url 'aplinventory:articledetail_list_popup' %}",
+                    "Ratting",
+                    "width=750,height=300,left=600,top=100,toolbar=0,status=1,resizable=no,scrollbars=no,");
+        }
+
+        $('document').ready(function () {
+
+            $('#id_quantity').change(function(e) {
+                var price = parseInt($("#id_article_price").val());
+                var quantity = parseInt($(this).val());
+                $("#id_sub_total").val(price * quantity);
+            });
+        });
+    </script>
+{% endblock %}

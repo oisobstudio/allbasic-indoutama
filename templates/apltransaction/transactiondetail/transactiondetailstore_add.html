@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Invoice In Store{% endblock %}
+
+{% block heading %}Invoice In Store{% endblock %}
+
+{% block content %}
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th>Number</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            <td>{{ invoice.invoice_number }}</td>
+            <td>{{ invoice.user }}</td>
+            <td>{{ invoice.invoice_date }}</td>
+            <td>{{ invoice.total }}</td>
+            <td>{{ invoice.category.info }}</td>
+            <td>
+                <a href="{% url 'apltransaction:invoicestore_remove' invoice.invoice_number %}" class="btn btn-danger">
+                <i class="fa fa-minus-circle"></i> Abort
+                </a>
+                <a href="{% url 'apltransaction:invoicestore_print' invoice.invoice_number %}" class="btn btn-default">
+                    <i class="fa fa-print"></i> Print
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="6">
+                <form action="" method="post" class="">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+
+                    {{ form.article_code|add_class:'form-control'|attr:'onclick:openShowArticle();'|attr:'placeholder:Choose'}}
+                    {% if form.article_code.errors %}
+                        {% for error in form.article_code.errors %}
+                            <span class="help-block text-warning">{{ error|escape }}</span>
+                        {% endfor %}
+                    {% endif %}
+                </form>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<br>
+
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th colspan="8" class="text-center">Article In Bag</th>
+        </tr>
+        <tr>
+            <th>#</th>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Sub Total</th>
+            <th>Action</th>
+        </tr>
+        {% for trandet in transactiondetails %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ trandet.article_code }}</td>
+                <td>{{ trandet.article_name }}</td>
+                <td>{{ trandet.article_size }}</td>
+                <td>{{ trandet.article_price }}
+                    {% if trandet.discount_code %}
+                        <small>
+                            <br> Cut Price (Discount):
+                            <br> {{ trandet.discount_name }} ({{ trandet.cut_price }}) per item
+                        </small>
+                    {% endif %}
+                </td>
+                <td>{{ trandet.quantity }}</td>
+                <td>{{ trandet.sub_total }}</td>
+                <td>
+                    <a href="{% url 'apltransaction:transactiondetailstore_remove' invoice.invoice_number trandet.article_code %}" class="text-danger">
+                        <i class="fa fa-minus-circle"></i>
+                    </a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8">Empty Transaction Detail</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+    $("#id_article_code").focus();
+</script>
+{% endblock %}

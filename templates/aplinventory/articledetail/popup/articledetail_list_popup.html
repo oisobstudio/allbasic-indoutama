@@ -1,0 +1,99 @@
+{% extends "base_popup_admin.html" %}
+{% load thumbnail %}
+
+{% block title %}Article List{% endblock %}
+
+{% block page_header %}
+<form method="get">
+    <input type="text" name="query" placeholder="Search Article" class="form-control" value="{{ query }}">
+</form>
+{% endblock %}
+
+{% block content %}
+
+<p>
+    <small>
+        Kamu saat ini terkoneksi pada brand <span class="label label-success">{{ request.session.session_brand_name }}</span>.
+        Sebelum melakukan transaksi, pastikan kamu harus mengkoneksikan brand kamu terlebih dahulu. Karena semua
+        artikel di halaman ini hanya muncul sesuai brand yang kamu koneksikan.
+    </small>
+</p>
+<div class="row">
+    <div class="col-lg-12">
+        <table class="table table-bordered">
+            <tr>
+                <th>#</th>
+                <th>Article</th>
+                <th>Size</th>
+                <th>Code</th>
+                <th>Stock</th>
+                <th>Action</th>
+            </tr>
+            {% for articledetail in articledetails %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    {% with articledetail.article.name as namearticle %}
+
+                    {% endwith %}
+                    <td>{{ articledetail.article.name }}</td>
+                    <td>{{ articledetail.size }}</td>
+                    <td>{{ articledetail.code }}</td>
+                    <td>{{ articledetail.stock }}</td>
+                    <td>
+                    {% if articledetail.stock > 0 %}
+                        <a href="#" onclick="add('id{{ articledetail.code }}')"
+                               id="id{{ articledetail.code }}"
+                               data-code="{{ articledetail.code }}"
+                               data-name="{{ articledetail.article.name }}"
+                               data-size="{{ articledetail.size.name }}"
+                               data-price="{{ articledetail.article.price }}"
+                               data-capital_price="{{ articledetail.article.capital_price }}"
+                               data-stock="{{ articledetail.stock }}">Choose</a>
+                    {% else %}
+                        <span class="text-danger">Out Of Stock</span>
+                    {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        {% include "aplinventory/articledetail/popup/paginator_articledetail_list_popup.html" with page=articledetails query=query brand_name=brand_name %}
+    </div>         
+</div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        function add(code) {
+
+
+            var idArticleCode = window.opener.document.getElementById("id_article_code");
+            var idArticleName = window.opener.document.getElementById("id_article_name");
+            var idArticleSize = window.opener.document.getElementById("id_article_size");
+            var idArticlePrice = window.opener.document.getElementById("id_article_price");
+            var idArticleStock = window.opener.document.getElementById("id_article_stock");
+            var idArticleQuantity = window.opener.document.getElementById("id_quantity");
+{#            var idArticleCapitalPrice = window.opener.document.getElementById("id_article_capitalprice");#}
+
+            var iscode = $("#"+code).data("code");
+            var name = $("#"+code).data("name");
+            var size = $("#"+code).data("size");
+            var price = $("#"+code).data("price");
+{#            var capitalPrice = $("#"+code).data("capital_price");#}
+            var stock = $("#"+code).data('stock');
+
+            idArticleCode.value = iscode;
+            idArticleName.value = name;
+            idArticleSize.value = size;
+            idArticlePrice.value = price;
+{#            idArticleCapitalPrice.value = capitalPrice;#}
+            idArticleQuantity.setAttribute("max", parseInt(stock));
+            window.close();
+
+        }
+    </script>
+{% endblock %}

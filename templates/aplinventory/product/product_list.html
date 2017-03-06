@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load widget_tweaks %}
+
+{% block title %}Product{% endblock %}
+
+{% block heading %}Product{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+    <a href="{% url 'aplinventory:product_add' %}">add new</a>
+</div>
+<div class="col-md-6">
+    <form action="">
+        {{ form.query|add_class:'form-control'|attr:'placeholder:Search Product With Name' }}
+    </form>
+</div>
+
+<br>
+
+<div class="col-md-12">
+    <table class="table table-bordered">
+        <tr>
+            <th>#</th>
+            <th>User</th>
+            <th>Brand</th>
+            <th>Code</th>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+        {% for product in products %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ product.user }}</td>
+            <td>{{ product.brand }}</td>
+            <td>{{ product.code }}</td>
+            <td>{{ product.product_category }}</td>
+            <td>{{ product.name }}</td>
+            <td>
+                <a href="{% url 'aplinventory:product_change' product.code %}">change</a> |
+                <a href="{% url 'aplinventory:product_remove'  product.code %}">remove</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7"><p>Your product has not added.</p></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% include 'aplinventory/product/product_pagination.html' with page=products query=query %}
+</div>
+{% endblock %}

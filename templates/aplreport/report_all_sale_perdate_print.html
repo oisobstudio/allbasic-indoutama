@@ -1,0 +1,75 @@
+{% extends "aplreport/report_base_print.html" %}
+{% load thumbnail %}
+{% load widget_tweaks %}
+
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h4>Report All Sale</h4>
+        <p>From {{ from_date }} to {{ to_date }}</p>
+        <hr>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        {% if data_reports %}
+        </table>
+        <table class="table table-bordered">
+            <tr>
+                <th>#</th>
+                <th>Invoice Number</th>
+                <th>Invoice Date</th>
+                <th>Brand</th>
+                <th>Article Code</th>
+                <th>Article Name</th>
+                <th>Article Price</th>
+                <th>Article Capital Price</th>
+                <th>Many</th>
+                <th>Total</th>
+                <th>Category</th>
+            </tr>
+            {% for data in data_reports %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ data.invoice.invoice_number }}</td>
+                <td>{{ data.invoice.invoice_date }}</td>
+                <td>{{ data.article_brand_name }}</td>
+                <td>{{ data.article_code }}</td>
+                <td>{{ data.article_name }} ({{ data.article_size }})</td>
+                <td>{{ data.article_price }}</td>
+                <td>{{ data.article_capitalprice }}</td>
+                <td>{{ data.quantity }}</td>
+                <td>{{ data.sub_total }}</td>
+                <td>{{ data.invoice.category.info }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block additional_button %}
+<a href="{% url 'aplreport:report_all_sale_perdate' %}" class="btn btn-default">Back To Invoice</a> <br><br>
+{% endblock %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+      var date_input_from_date = $('input[name="from_date"]'); //our date input has the name "date"
+      var date_input_to_date = $('input[name="to_date"]'); //our date input has the name "date"
+      var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+      var options={
+        format: 'yyyy-mm-dd',
+        container: container,
+        todayHighlight: true,
+        autoclose: true,
+      };
+      date_input_from_date.datepicker(options);
+      date_input_to_date.datepicker(options);
+    })
+</script>
+{% endblock %}
+
+ 

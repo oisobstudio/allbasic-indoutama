@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Invoice In{% endblock %}
+
+{% block heading %}Invoice Store{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+    <!-- Split button -->
+    <a href="{% url 'apltransaction:invoicestore_add' %}" class="btn btn-default"><i class="fa fa-plus"></i> add new</a>
+</div>
+
+<div class="col-md-6">
+    <form action="" method="get">
+        {{ form.query|add_class:"form-control"|attr:"placeholder:Search Invoice" }}
+    </form>
+</div>
+
+<div class="col-lg-12">
+    <br>
+        <form method="post" action="{% url 'apltransaction:invoiceweb_print_all' %}" id="id_form_invoiceweb_print_all">
+        {% csrf_token %}
+        <table class="table table-condensed table-bordered">
+            <tr>
+                <th><input type="checkbox" name="action_toggle"></th>
+                <th>#</th>
+                <th>User</th>
+                <th>Invoice Number</th>
+                <th>Date Transaction</th>
+                <th>Total Price</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Detail</th>
+            </tr>
+            {% for invoice in invoices %}
+                <tr>
+                    <td><input type="checkbox" id="id_selected_action" name="_selected_action" value="{{ invoice.invoice_number }}"></td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ invoice.user.username }}</td>
+                    <td>{{ invoice.invoice_number }}</td>
+                    <td>{{ invoice.invoice_date }}</td>
+                    <td>{{ invoice.total }}</td>
+                    <td>{{ invoice.category.info }}</td>
+                    <td>{{ invoice.status.info }}</td>
+                    <td>
+                        <!-- MODAL TRIGGER DETAIL INVOICE -->
+                        <a data-toggle="modal" href="#{{ invoice.invoice_number }}">
+                            detail
+                        </a>
+
+                        <!-- MODAL DETAIL INVOICE -->
+                        <div class="modal fade bs-example-modal-lg" id="{{ invoice.invoice_number }}">
+                        	<div class="modal-dialog modal-lg">
+                        		<div class="modal-content">
+                        			<div class="modal-header">
+                        				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+                        				<h4 class="modal-title">
+                                            Invoice #{{ invoice.invoice_number }} ({{ invoice.status.info }})
+                                        </h4>
+                        			</div>
+                        			<div class="modal-body">
+                                        <div class="well well-samll">
+                                            Grand Total: <strong>IDR. {{ invoice.total }}</strong>
+                                        </div>
+                        				<table class="table table-bordered">
+                                            <tr>
+                                                <th class="text-center" colspan="6">Article In Bag</th>
+                                            </tr>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Article</th>
+                                                <th>Size</th>
+                                                <th>Price</th>
+                                                <th>Quantity</th>
+                                                <th>Sub Total</th>
+                                            </tr>
+                                            {% for item in invoice.transactiondetail_set.all %}
+                                                <tr>
+                                                    <td>{{ forloop.counter }}</td>
+                                                    <td>{{ item.article_name }}</td>
+                                                    <td>{{ item.article_size }}</td>
+                                                    <td>{{ item.article_price }}</td>
+                                                    <td>{{ item.quantity }}</td>
+                                                    <td>{{ item.sub_total }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+
+                                        {% if invoice.category.abbv == 'W' %}
+                                            {# BILLING #}
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <th class="text-center" colspan="4">Billing</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Code</th>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                </tr>
+                                                {% for bill in invoice.billing_set.all %}
+                                                    <tr>
+                                                        <td>{{ bill.code}}</td>
+                                                        <td>{{ bill.name }}</td>
+                                                        <td>{{ bill.email }}</td>
+                                                        <td>{{ bill.phone }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                            {# SHIPPING #}
+                                            <table class="table table-bordered">
+                                                <tr>
+                                                    <th class="text-center" colspan="6">Shipping</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>Code</th>
+                                                    <th>Province</th>
+                                                    <th>City</th>
+                                                    <th>Vendor / Courier</th>
+                                                    <th>Package</th>
+                                                    <th>Price</th>
+                                                </tr>
+                                                {% for ship in invoice.shipping_set.all %}
+                                                    <tr>
+                                                        <td>{{ ship.code}}</td>
+                                                        <td>{{ ship.province }}</td>
+                                                        <td>{{ ship.city }}</td>
+                                                        <td>{{ ship.vendor }}</td>
+                                                        <td>{{ ship.pack }}</td>
+                                                        <td>{{ ship.price }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </table>
+                                        {% else %}
+                                        {% endif %}
+                        			</div>
+
+                        			<div class="modal-footer">
+                                        {% if invoice.category.abbv == 'W' %}
+                                        <a class="btn btn-default" href="{% url 'apltransaction:transactiondetailweb_add' invoice.invoice_number %}">
+                                            open
+                                        </a>
+                                        <a class="btn btn-default" href="{% url 'apltransaction:invoiceweb_print' invoice.invoice_number %}">
+                                            print
+                                        </a>
+                                        {% else %}
+                                        <a class="btn btn-default" href="{% url 'apltransaction:transactiondetailstore_add' invoice.invoice_number %}">
+                                            open
+                                        </a>
+                                        <a class="btn btn-default" href="{% url 'apltransaction:invoicestore_print' invoice.invoice_number %}">
+                                            print
+                                        </a>
+                                        {% endif %}
+                        			</div>
+                        		</div><!-- /.modal-content -->
+                        	</div><!-- /.modal-dialog -->
+                        </div><!-- /.modal -->
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="9"><p>There has been no transaction.</p></td>
+                </tr>
+            {% endfor %}
+        </table>
+        </form>
+    {% include "pagination_admin.html" with page=invoices %}
+</div>
+
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('input:checkbox[name=action_toggle]').change(function() {
+            $('input:checkbox[name=_selected_action]').not(this).prop('checked', this.checked);
+        });
+
+        $('#id_invoiceweb_print_all').click(function() {
+            $("#id_form_invoiceweb_print_all").submit();
+        });
+
+        $('#id_invoiceweb_change_status_process').click(function() {
+            $('#id_form_invoiceweb_print_all').attr('action', '{% url 'apltransaction:invoiceweb_change_status_process' %}').submit();
+        });
+    });
+</script>
+{% endblock %}

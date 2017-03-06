@@ -1,0 +1,96 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>HTML & CSS Avery Labels (5160) by MM at Boulder Information Services</title>
+    <style>
+
+    body {
+        width: 8.5in;
+        margin: 0 auto;
+        }
+    .label{
+        /* Avery 5160 labels -- CSS and HTML by MM at Boulder Information Services */
+        width: 2.475in; /* plus .6 inches from padding */
+        height: 26mm;/*height: .875in;*/ /* plus .125 inches from padding */
+        /*padding: .125in .3in 0;*/
+
+        margin-right: 0 auto; /* the gutter */
+
+        float: left;
+
+        text-align: center;
+        overflow: hidden;
+        padding-top: 5px;
+        font-family: Arial;
+        /*font-weight: bold;*/
+        margin-left: 10px;
+        }
+    .page-break  {
+        clear: left;
+        display:block;
+        page-break-after:always;
+        }
+
+    span {
+        text-align: center;
+ 
+        padding-bottom: 5px;
+        font-family: Arial;
+        font-size: 10pt;
+        position: relative;
+        left: -20px;
+        padding-top: 2px;
+        display:block;
+    }
+   
+    </style>
+
+</head>
+<body>
+<!-- JQUERY -->
+<script src="{% static 'sbadmin/vendor/jquery/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'vendors/simplebarcode/jquery-barcode.js' %}"></script>
+
+<!--     <center><small id="top">{{ ad.code }}</small></center> -->
+    
+<!--     <small>{{ article.name }}</small>
+    <small>{{ ad.size }}</small> -->
+
+{% for ad in article.articledetail_set.all %}
+    
+    {% for i in ""|ljust:ad.stock %}
+    
+    <div class="label">
+        <span>IDR {{ article.price }} {{ article.name }} ({{ ad.size }})</span>
+        <div id="{{article.code}}_{{ ad.code }}_{{ ad.stock }}_{{ forloop.counter }}" data-code="{{ ad.code }}">
+        <script>
+            $("#{{article.code}}_{{ ad.code }}_{{ ad.stock }}_{{ forloop.counter }}")
+                .barcode("{{ ad.code }}", "code93", 
+                    {
+                        barWidth: 2 , 
+                        barHeight: 60,
+                        output: "css",
+                        fontSize: 10,
+                        marginHRI: 12,
+                        showHRI: false}); 
+        </script>
+        </div>
+        <span>{{ ad.code }}</span>
+    </div>
+    <div class="page-break"></div>
+    {% endfor %}
+    
+<!--     <div class="page-break"></div> -->
+{% endfor %}
+<!-- <div class="label"><img src="https://boulderinformationservices.files.wordpress.com/2011/08/barcode_sample.png" /><br>Human readable</div>
+<div class="label"><img src="https://boulderinformationservices.files.wordpress.com/2011/08/barcode_sample.png" /><br>Human readable</div>
+<div class="label"><img src="https://boulderinformationservices.files.wordpress.com/2011/08/barcode_sample.png" /><br>Human readable</div>
+<div class="label"><img src="https://boulderinformationservices.files.wordpress.com/2011/08/barcode_sample.png" /><br>Human readable</div>
+<div class="label">(Repeat 30 times)</div>
+<div class="page-break"></div> -->
+
+
+</body>
+</html>

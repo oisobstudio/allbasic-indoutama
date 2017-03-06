@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block heading %}Dashboard{% endblock %}
+
+{% block css %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'datatables/css/dataTables.bootstrap.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="col-md-6">
+	<h4>Total Stock Article</h4>
+	<table id="id_dataset_total_article_in_brand_size" class="display table" cellspacing="0" width="100%">
+		<thead>
+            <tr>
+                <th>Brand</th>
+                <th>Article</th>
+                <th>Size</th>
+                <th>Available</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Brand</th>
+                <th>Article</th>
+                <th>Size</th>
+                <th>Available</th>
+            </tr>
+        </tfoot>
+	</table>
+</div>
+
+<div class="col-md-4">
+	<h4 style="margin-left: 50px;">Total Stock Article In Brand</h4>
+	<canvas height="400" id="dataset_total_article_by_brand"></canvas>
+</div>
+
+<div class="container">
+	<div id="inbox"></div>
+</div>
+  <form id="messageform">
+     <textarea id="message"></textarea>
+  </div>
+  <button id="disconnect">Disconnect</button>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript" src="{% static 'bower_components/chart.js/Chart.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'datatables/js/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'datatables/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script>
+	var ctx_dataset_total_article_in_brand = document.getElementById('dataset_total_article_by_brand').getContext('2d')
+	var dataset_total_article_in_brand = JSON.parse("{{ dataset_total_article_by_brand|escapejs }}");
+
+	var data_dataset_total_article_in_brand = {
+	    labels: dataset_total_article_in_brand.brand_name,
+	    datasets: [
+	        {
+	            label: "Total Article In Brand",
+	            backgroundColor: [
+	                'rgba(255, 99, 132, 0.2)',
+	            ],
+	            borderColor: [
+	                'rgba(255,99,132,1)',
+	            ],
+	            borderWidth: 1,
+	            data: dataset_total_article_in_brand.sum_stock,
+	        }
+	    ]
+	};
+	
+	var barchart_dataset_total_article_in_brand = new Chart(ctx_dataset_total_article_in_brand).Bar(data_dataset_total_article_in_brand);
+</script>
+
+<script type="text/javascript">
+	dataset = JSON.parse("{{ dataset_total_article_in_brand_size|escapejs }}");
+	console.log(dataset);
+
+	$(document).ready(function() {
+    $('#id_dataset_total_article_in_brand_size').DataTable( {
+	        data: dataset,
+	        columns: [
+	            { title: "Brand" },
+	            { title: "Article" },
+	            { title: "Size" },
+	            { title: "Available" },
+	        ]
+	    } );
+	} );
+</script>
+
+<script type="text/javascript">
+
+</script>
+{% endblock %}

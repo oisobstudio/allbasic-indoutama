@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}Brand List{% endblock %}
+
+{% block heading %}Brand{% endblock %}
+
+{% block content %}
+<div class="col-lg-6">
+    <a href="{% url 'apldistro:brand_add' %}">New Brand</a>
+</div>
+<div class="col-lg-6"></div>
+
+
+<div class="col-lg-12">
+    <table class="table table-striped table-condensed">
+        <tr>
+            <th>#</th>
+            <th>Logo</th>
+            <th>Name</th>
+            <th>About</th>
+            <th>Action</th>
+        </tr>
+        {% for brand in brands %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+                {% thumbnail brand.logo "60" as im %}
+                    <a href="{{ brand.logo.url }}">
+                        <img src="{{ im.url }}" alt="{{ brand.name }}" class="img-rounded">
+                    </a>
+                {% endthumbnail %}
+            </td>
+            <td>{{ brand.name }}</td>
+            <td>{{ brand.about }}</td>
+            <td>
+                <a href="{% url 'apldistro:brand_change' brand.pk %}">change</a> |
+                <a href="{% url 'apldistro:brand_remove' brand.pk %}">remove</a> |
+                <a href="{% url 'apldistro:brand_connect' brand.pk %}">connect</a>
+            </td>
+        </tr>
+        {% empty %}
+                <tr>
+                    <td colspan="6">Please add new brand.</td>
+                </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+
+{% block title %}Add Discount{% endblock %}
+
+{% block heading %}Add Discount{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="col-lg-5">
+    <form action="" method="post">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="non-field-errors">
+            {% for err in form.non_field_errors %}
+                <p class="form-error text-danger">{{ err }}</p>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- ============= -->
+        <!-- Article field -->
+        <!-- ============= -->
+        <div class="form-group">
+            <label for="{{ form.article.id_for_label }}">Article :</label>
+            {{ form.article|add_class:'form-control selectpicker'|attr:'data-show-subtext:true'|attr:'data-live-search:true' }}
+            {% if form.article.errors %}
+                {% for error in form.article.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- =========== -->
+        <!-- Place field -->
+        <!-- =========== -->
+        <div class="form-group">
+            <label for="{{ form.place.id_for_label }}">Place :</label>
+            {{ form.place|add_class:'form-control selectpicker'|attr:'data-show-subtext:true'|attr:'data-live-search:true' }}
+            {% if form.place.errors %}
+                {% for error in form.place.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- ========== -->
+        <!-- Name field -->
+        <!-- ========== -->
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}" >Name :</label>
+            {{ form.name|add_class:'form-control'|attr:"onfocus:notifyMe();" }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.cut_price.id_for_label }}" >Cut Price :</label>
+            {{ form.cut_price|add_class:'form-control'|attr:"onfocus:notifyMe();" }}
+            {% if form.cut_price.errors %}
+                {% for error in form.cut_price.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <input type="submit"  value="save" class="btn btn-success">
+    </form>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script src="{% static 'bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}"></script>
+
+<script>
+$(document).ready(function(){
+    $('.selectpicker').selectpicker();
+});
+</script>
+{% endblock %}

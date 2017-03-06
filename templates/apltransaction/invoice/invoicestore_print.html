@@ -1,0 +1,94 @@
+
+{% load thumbnail %}
+
+
+
+<style type="text/css" media="all">
+    * {
+        font-size: 8pt;
+        font-family: monospace;
+    }
+    td {
+        font-size: 8pt;
+
+    }
+</style>
+
+<style type="text/css" media="print">
+    * {
+        font-size: 8pt;
+        font-family: monospace;
+    }
+    td {
+        font-size: 8pt;
+
+    }
+
+    a {
+        display: none;
+    }
+
+    h3 {
+        font-size: 12pt;
+    }
+
+    img {
+        opacity: 20;
+    }
+
+    small   {
+        font-size: 7pt;
+    }
+
+    hr {
+        padding: 0;
+        margin: 0;
+    }
+</style>
+{% block content_billing %}
+<h1><center>EFG Store</center></h1>
+<p><center>{{ store.address }}</center></p>
+
+
+NUMBER #{{ invoice.invoice_number }} <br>
+TANGGAL: {{ invoice.invoice_date }}
+<br>
+BY: {{ invoice.user }}
+<br><br><hr>
+<table class="table table-bordered table-condensed">
+    {% for item in transactiondetails %}
+    <tr>
+        <td valign="top">{{ forloop.counter }}</td>
+        <td valign="top">{{ item.article_name }} ({{ item.article_size }})</td>
+        <td valign="top">{{ item.article_price }} <hr>
+        {% if item.discount_code %}
+            <small>
+                <br> Discount 
+                <br> {{ item.discount_name }} ({{ item.cut_price }}) per item
+            </small>
+        {% endif %}
+        </td>
+        <td valign="top">@ {{ item.quantity }}</td>
+        <td valign="top">{{ item.sub_total }}</td>
+    </tr>
+    {% endfor %} 
+</table>
+<br>
+<hr>
+Grand Total: 
+<h3>IDR {{ invoice.total }}</h3>
+
+<br>
+Thank You<br> See You
+{% endblock %}
+
+
+{% block additional_button %}
+<a href="{% url 'apltransaction:invoicestore_list' %}" class="btn btn-default">Back To Invoice</a> <br><br>
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+    window.print();
+</script>
+{% endblock %}

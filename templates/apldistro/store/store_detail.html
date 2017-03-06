@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+
+{% block title %}Store{% endblock %}
+
+{% block heading %}Store{% endblock %}
+
+{% block content %}
+
+<div class="col-md-12">
+    <table class="table table-condensed table-striped">
+        <tr>
+            <th>Owner</th>
+            <th>Name</th>
+            <th>Founding</th>
+            <th>About</th>
+            <th>Logo</th>
+            <th>Address</th>
+            <th>Action</th>
+        </tr>
+        <tr>
+            {% if store %}
+            <td>{{ store.owner }}</td>
+            <td>{{ store.name }}</td>
+            <td>{{ store.founding_date }}</td>
+            <td>{{ store.about }}</td>
+            <td>
+                {% thumbnail store.logo "30" as im %}
+                    <img src="{{ im.url }}" alt="{{ store.name }}" class="img-thumbnail">
+                {% endthumbnail %}
+            </td>
+            <td>{{ store.address }}</td>
+            <td>
+                <a href="{% url 'apldistro:store_change' store.pk %}">change</a>
+            </td>
+            {% else %}
+            <td colspan="7">
+                You have not added store, you can create store in
+                <a href="{% url 'apldistro:store_add' %}">New Store</a>
+            </td>
+            {% endif %}
+        </tr>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "base_print_invoiceweb.html" %}
+
+{% block title %}{{ brand.name }}, {{ request.user }}{% endblock %}
+
+{% block css %}
+<style type="text/css" media="all">
+	table, th, td {
+/*		border: dotted 1px gray;*/
+		padding: 1px;
+		margin: 0px auto;
+		font-size: 10pt;
+	}
+
+	td	{
+		vertical-align: top;
+		text-align: left;
+	}
+
+	table {
+    	border-collapse: collapse;
+    	width: 200mm;
+	}
+
+	b {
+		border-bottom: 1px solid gray;
+		margin-left: 0; padding-left: 0;
+	}
+
+	img {
+	    position: absolute;
+	    left: 0;
+	    top: 20px;
+	    width: 100%;
+	    height: auto;
+	    opacity: 0.03;
+	}	
+
+	#limitborder {
+		padding: 3px;
+		border: 1px dashed gray;
+		margin-top: -1px;
+		width: 210mm;
+		/*background: url("") no-repeat fixed center;*/
+		/*background-color: rgba(0, 0, 0, 0.6);*/
+	}
+
+	.rules {
+		width: 100%;
+		border: 1px solid gray;
+	}
+</style>
+
+<style type="text/css" media="print">
+	#action {
+		display: none;
+	}
+</style>
+
+<style type="text/css">
+   #limitborder { page-break-inside:auto; page-break-inside:avoid; page-break-after:auto;}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<p class="text-center" id="action"><a href="{% url 'apltransaction:invoiceweb_list' %}">back</a> | <a href="#" onclick="window.print();">print</a></p>
+</div>
+
+{% for invoice in invoices %}
+<div class="container-fluid" id="limitborder">
+	<img src="{{ brand.logo.url }}">
+	<table>
+		<tr>
+			<th colspan="2" style="font-size: 13pt;"><i class="glyphicon glyphicon-shopping-cart"></i> {{ brand.name }} Store</th>
+		</tr>
+		<tr>
+			<td>
+				<b>BILLING</b><br>
+				{{ invoice.billing_set.all.first.name }}<br>
+				{{ invoice.billing_set.all.first.email }}<br>
+				{{ invoice.billing_set.all.first.phone }}<br>
+				<span style="display: none;" id="id_phone_{{ invoice.billing_set.all.first.phone }}">{{ invoice.billing_set.all.first.phone }}</span>
+			</td>
+			<td>
+				<b>INVOICE</b><br>
+				invoice number: {{ invoice.invoice_number }}<br>
+				admin: {{ invoice.user.username }}<br>
+				date: {{ invoice.invoice_date }}<br>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<b>ADDRESS</b><br>
+				province: {{ invoice.shipping_set.all.first.province }}<br>
+				city: {{ invoice.shipping_set.all.first.city }}<br>
+				courier & service: {{ invoice.shipping_set.all.first.vendor }}, {{ invoice.shipping_set.all.first.pack }}<br>
+				pricing: {{ invoice.shipping_set.all.first.price }}<br>
+				<span style="display: none;" id="id_price_shipping_{{ invoice.shipping_set.all.first.price }}">{{ invoice.shipping_set.all.first.price }}</span>
+			</td>
+			<td>
+				<b>ORDER</b><br>
+				{% for item in invoice.transactiondetail_set.all %}
+					
+
+					{% if item.discount_code %}
+					[{{ forloop.counter }}]. {{ item.article_name }} x {{ item.quantity }} @ IDR {{ item.article_price }}
+                    <small>
+                    <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cut Pricing <i>{{ item.discount_name }}</i>. IDR {{ item.cut_price }}    
+                    </small>
+                    {% else %}
+                    [{{ forloop.counter }}]. {{ item.article_name }} x {{ item.quantity }} @ IDR {{ item.article_price }}<br>
+                	{% endif %}
+				{% endfor %}
+
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="2">
+				address: {{ invoice.shipping_set.all.first.address }}
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="2">
+				<div class="rules"></div>
+			</td>
+		</tr>
+		<tr style="">
+			<td>
+				sub total
+			</td>
+			<th>
+				IDR. <span id="id_price_shipping_{{ invoice.invoice_number }}">{{ invoice.total }}</span>
+			</th>
+		</tr>
+
+		<tr>
+			<td>
+				shipping
+			</td>
+			<th>
+				IDR. <span>{{ invoice.shipping_set.all.first.price }}</span>
+			</th>
+		</tr>
+
+		<tr>
+			<td>
+				unique payment code
+			</td>
+			<th>
+				IDR. <span id="unique_payment_code_{{ invoice.invoice_number }}"></span>
+			</th>
+		</tr>
+		<tr>
+			<td>
+				GRAND TOTAL
+			</td>
+			<th>
+				IDR. <span id="grand_total_{{ invoice.invoice_number }}"></span>
+			</th>
+		</tr>
+	</table>
+	<script type="text/javascript">
+		var unique_pricing = document.getElementById("id_phone_{{ invoice.billing_set.all.first.phone }}").innerHTML.replace(/<[^>]*>/g, "").slice(-3);
+		var shipping_pricing = document.getElementById("id_price_shipping_{{ invoice.shipping_set.all.first.price }}").innerHTML.replace(/<[^>]*>/g, "");
+		var total_pricing = document.getElementById("id_price_shipping_{{ invoice.invoice_number }}").innerHTML.replace(/<[^>]*>/g, "");
+		// set nilai html untuk #unique_payment_code
+		document.getElementById('unique_payment_code_{{ invoice.invoice_number }}').innerHTML = unique_pricing
+		var grand_total = parseInt(unique_pricing) + parseInt(shipping_pricing) + parseInt(total_pricing);
+		document.getElementById('grand_total_{{ invoice.invoice_number }}').innerHTML = grand_total;
+
+	</script>
+
+</div>
+{% endfor %}
+{% endblock %}
+

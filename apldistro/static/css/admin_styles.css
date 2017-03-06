@@ -1,0 +1,7 @@
+.nounderline,
+.nounderline:after,
+.nounderline:hover,
+.nounderline:active,
+.nounderline:visited {
+    text-decoration: none;
+}

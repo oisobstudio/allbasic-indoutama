@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Remove All Invoice Hold & Invalid{% endblock %}
+
+{% block heading %}Remove All Invoice Hold & Invalid{% endblock %}
+
+{% block content %}
+<div class="col-md-4">
+    <p class="text-danger">
+        be sure to perform this action. This action will remove all the invoicing data that have invalid status and hold.
+    </p>
+    <button id="id_ajax_invoice_remove_hold_and_invalid" class="btn btn-danger btn-lg btn-block">clean invoice in hold & invalid !</button>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Success</h4>
+      </div>
+      <div class="modal-body">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+{% block js %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        $('input:checkbox[name=action_toggle]').change(function() {
+            $('input:checkbox[name=_selected_action]').not(this).prop('checked', this.checked);
+        });
+
+        $('#id_invoiceweb_print_all').click(function() {
+            $("#id_form_invoiceweb_print_all").submit();
+        });
+
+        $('#id_invoiceweb_change_status_process').click(function() {
+            $('#id_form_invoiceweb_print_all').attr('action', '{% url 'apltransaction:invoiceweb_change_status_process' %}').submit();
+        });
+
+        $("#id_ajax_invoice_remove_hold_and_invalid").on('click', function() {
+            $.ajax({
+                url: "{% url 'apltransaction:ajax_invoice_remove_hold_and_invalid' %}",
+                dataType: 'json',
+                method: 'POST',
+                data: JSON.stringify({'hallo': 'Hallo Yanwar'}),
+                contentType: 'application/json',
+                success: function(data) {
+
+                    var dataHtml = "<ul>"; 
+                        dataHtml += "<li>Total article back to warehouse: " + data.total_article_back + "</li>";
+                        dataHtml += "<li>Total invalid invoice: " + data.total_invoices_invalid + "</li>";
+                        dataHtml += "<li>Total cancel invoice: " + data.total_invoices_cancel + "</li>";
+                        dataHtml += "</ul>";
+
+                    $(".modal-body").html('success removing invalid and hold invoice ! <hr>' + dataHtml);
+                    $('#myModal').modal('show');
+
+                },
+                error: function() {
+
+                }
+            });
+            return false;
+        });
+    });
+</script>
+{% endblock %}

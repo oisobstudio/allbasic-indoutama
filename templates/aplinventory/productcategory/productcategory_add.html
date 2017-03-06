@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Add Product Category{% endblock %}
+
+{% block heading %}Add product category{% endblock %}
+
+{% block content %}
+
+<div class="col-md-4">
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+
+        <div class="form-group">
+            <label for="{{ form.sizecategory.id_for_label }}">Size Category :</label>
+            {{ form.sizecategory|add_class:'form-control' }}
+            {% if form.sizecategory.errors %}
+                {% for error in form.sizecategory.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Name :</label>
+            {{ form.name|add_class:'form-control' }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <input type="submit" value="Save" class="btn btn-success">
+    </form>
+</div>
+
+{% endblock %}
