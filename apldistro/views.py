@@ -117,7 +117,7 @@ class BrandAdd(View):
         return render(request, self.template, self.data_context)
 
     def post(self, request):
-        form = self.form_brand_add(request.POST)
+        form = self.form_brand_add(data=request.POST, files=request.FILES)
 
         if form.is_valid():
             brand = form.save(commit=False)
@@ -149,7 +149,7 @@ class BrandChange(View):
 
     def post(self, request, brand_pk):
         brand = get_object_or_404(Brand, pk=brand_pk)
-        form = self.form_brand_change(instance=brand, data=request.POST)
+        form = self.form_brand_change(instance=brand, data=request.POST, files=request.FILES)
         
         if form.is_valid():
             form.save()

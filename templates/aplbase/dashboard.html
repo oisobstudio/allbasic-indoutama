@@ -73,7 +73,7 @@
 <br>
 <br>
 
-<div class="col-md-12">
+<!-- <div class="col-md-12">
 	<h4>Total Stock Article</h4>
 	<table id="id_dataset_total_article_in_brand_size" class="display table" cellspacing="0" width="100%">
 		<thead>
@@ -94,7 +94,7 @@
         </tfoot>
 	</table>
 </div>
-
+ -->
 {% endblock %}
 
 {% block js %}
@@ -127,20 +127,20 @@
 </script>
 
 <script type="text/javascript">
-	dataset = JSON.parse("{{ dataset_total_article_in_brand_size|escapejs }}");
-	console.log(dataset);
+	// dataset = JSON.parse(" dataset_total_article_in_brand_size|escapejs ");
+	// console.log(dataset);
 
-	$(document).ready(function() {
-    $('#id_dataset_total_article_in_brand_size').DataTable( {
-	        data: dataset,
-	        columns: [
-	            { title: "Brand" },
-	            { title: "Article" },
-	            { title: "Size" },
-	            { title: "Available" },
-	        ]
-	    } );
-	} );
+	// $(document).ready(function() {
+ //    $('#id_dataset_total_article_in_brand_size').DataTable( {
+	//         data: dataset,
+	//         columns: [
+	//             { title: "Brand" },
+	//             { title: "Article" },
+	//             { title: "Size" },
+	//             { title: "Available" },
+	//         ]
+	//     } );
+	// } );
 </script>
 
 <script type="text/javascript">
