@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import os
 import sys
-import tornado.ioloop
-import tornado.web
 
 
 if __name__ == "__main__":
