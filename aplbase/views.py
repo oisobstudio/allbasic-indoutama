@@ -16,6 +16,7 @@ class Dashboard(View):
 		self._dataset_total_article_by_brand()
 		self._dataset_total_article_by_size()
 		self._dataset_sale_admin_performance()
+		self._dataset_informasi_invalid_invoice()
 		return render(request, self.template, self.data_context)
 
 	def _dataset_total_article_by_brand(self):
@@ -41,7 +42,7 @@ class Dashboard(View):
 
 	def _dataset_sale_admin_performance(self):
 
-		total_invoice_per_status = TransactionDetail.objects.values('user__username').annotate(
+		total_invoice_per_status = TransactionDetail.objects.exclude(Q(invoice__billing=None)|Q(invoice__shipping=None)).values('user__username').annotate(
 			hold=Sum(
 				Case(When(invoice__status__abbv='H', then=1), output_field=IntegerField())
 			),
@@ -63,6 +64,13 @@ class Dashboard(View):
 		)
 
 		self.data_context['dataset_sale_admin_performance'] = total_invoice_per_status
+
+
+	def _dataset_informasi_invalid_invoice(self):
+		data = Invoice.objects.filter(Q(billing=None)|Q(shipping=None)|Q(transactiondetail=None)).values('user__username').\
+				annotate(Count('user__username'))
+		self.data_context['dataset_informasi_invalid_invoice'] = data
+
 
 
 

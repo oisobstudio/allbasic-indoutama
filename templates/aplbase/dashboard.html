@@ -64,6 +64,38 @@
 		</tr>
 		{% endfor %}
 	</table>
+
+	<h4>Informasi Invoice Yang Tidak Valid !</h4>
+	<small class="text-danger">
+		Perhatian, invoice yang sudah dibuat tidak boleh ditinggalkan begitu saja tanpa
+		terisi data-data artikel yang mau dipesan, billing dan shipping. Jika tidak, 
+		sistem akan menghapus secara berkala untuk mengembalikan stok barang dan membersihkan
+		invoice yang invalid. Informasi ini akan ditindak lanjuti sebagai laporan per cutoff untuk
+		memberikan sanksi (maybeee :D)
+	</small>
+	<small class="text-info">
+		Pastikan jika anda ingin membatalkan invoice, klik tombol <code>remove</code>
+	</small>
+
+	<br>
+	<br>
+
+	<table class="table table-striped table-condensed">
+		<tr>
+			<th>Pembuat Invoice</th>
+			<th>Jumlah Invoice yang ditinggalkan begitu saja (invalid)</th>
+		</tr>
+		{% for invalid_invoice in dataset_informasi_invalid_invoice %}
+		<tr>
+			<td>{{ invalid_invoice.user__username }}</td>
+			<td><span class="label label-danger">{{ invalid_invoice.user__username__count }}</span></td>
+		</tr>
+		{% empty %}
+		<tr>
+			<td rowspan="2">Tidak ada invoice yang tidak valid ! sangat bagus !</td>
+		</tr>
+		{% endfor %}
+	</table>
 </div>
 
 {% endblock %}

@@ -34,9 +34,7 @@
             <td>{{ article.user.username }}</td>
             <td>{{ article.code }}</td>
             <td>
-                {% thumbnail article.brand.logo "30" as im %}
-                    <img src="{{ im.url }}" alt="" class="img-thumbnail">
-                {% endthumbnail %}
+                <span class="label label-info">{{ article.brand.name }}</span>
             </td>
             <td>{{ article.product }}</td>
             <td id="id_article_name" data-toggle="modal" data-target="#{{ article.code }}"><a href="#">{{ article.name }}</a></td>
