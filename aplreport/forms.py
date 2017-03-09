@@ -1,4 +1,5 @@
 from django import forms
+from apldistro.models import Brand
 
 
 
@@ -23,5 +24,16 @@ class FormReportingSaleWeb(forms.Form):
 
 
 class FormReportingSaleArticle(forms.Form):
+	from_date = forms.CharField()
+	to_date = forms.CharField()
+
+
+class FormLaporanArtikelDiminati(forms.Form):
+	from_date = forms.CharField()
+	to_date = forms.CharField()
+
+
+class FormLaporanTrafikBrand(forms.Form):
+	brand = forms.ModelMultipleChoiceField(queryset=Brand.objects.all() )
 	from_date = forms.CharField()
 	to_date = forms.CharField()

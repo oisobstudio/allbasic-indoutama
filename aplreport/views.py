@@ -3,7 +3,7 @@ import csv
 import json
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Sum, Count, F
+from django.db.models import Sum, Count, F, Q
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import View
@@ -17,6 +17,8 @@ from .forms import FormReportAllSalePerdate
 from .forms import FormReportingSaleStore
 from .forms import FormReportingSaleWeb
 from .forms import FormReportingSaleArticle
+from .forms import FormLaporanArtikelDiminati
+from .forms import FormLaporanTrafikBrand
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -83,7 +85,7 @@ def reporting_sale_web(request):
 
 			data_reports = TransactionDetail.objects.filter(
 				invoice__invoice_date__range=(from_date, to_date), invoice__category__abbv='W', ).exclude(
-				invoice__billing=None, invoice__shipping=None)
+				invoice__billing=None, invoice__shipping=None).order_by('-user__username', '-invoice__status__abbv')
 
 			total = data_reports.aggregate(Sum('sub_total'))
 
@@ -101,9 +103,9 @@ def reporting_sale_web(request):
 					data_csv.append([
 						td.user, 
 						"({}) - {}".format(td.invoice.status.abbv, td.invoice.status.info),
-						td.invoice.invoice_number, 
+						"inv: {}".format(td.invoice.invoice_number), 
 						td.article_brand_name, 
-						td.article_code,
+						"art: {}".format(td.article_code),
 						td.article_name,
 						td.article_size,
 						td.article_price,
@@ -202,4 +204,99 @@ class ReportingStockArticle(View):
 
 		return dataset
 
+
+class LaporanArtikelDiminati(View):
+	form_laporan_artikel_diminati = FormLaporanArtikelDiminati
+	context = {}
+	template = 'aplreport/laporan_artikel_diminati.html'
+
+	def get(self, request):
+		form = self.form_laporan_artikel_diminati()
+		self.context['form'] = form
+		return render(request, self.template, self.context)
+
+	def post(self, request):
+		form = self.form_laporan_artikel_diminati(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			from_date = cd['from_date']
+			to_date = cd['to_date']
+
+			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
+			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
+
+			data_laporan_artikel_diminati = TransactionDetail.objects.filter(invoice__invoice_date__range=(from_date, to_date)).exclude(
+				invoice__in=Invoice.objects.filter(Q(billing__isnull=True)|Q(shipping__isnull=True)|Q(transactiondetail__isnull=True)))\
+				.values('article_brand_name', 'article_name')\
+				.annotate(jumlah_pembelian=Sum('quantity')).order_by('-article_brand_name')
+
+			data_laporan_artikel_diminati = list(data_laporan_artikel_diminati)
+
+			response = HttpResponse(content_type='text/csv')
+			response['Content-Disposition'] = 'attachment; filename="{}-{}.csv"'.format('Laporan Artikel Yang Diminati', datetime.datetime.now())
+
+			writer = csv.writer(response)
+			writer.writerow(['Nama Brand', 'Nama Artikel', 'Jumlah Pembelian'])
+
+			for data in data_laporan_artikel_diminati:
+				writer.writerow([
+						data['article_brand_name'],
+						data['article_name'],
+						data['jumlah_pembelian'],
+					])
+
+			return response
+		
+		self.context['form'] = form
+
+
+class LaporanTrafikBrand(View):
+	form_laporan_trafik_brand = FormLaporanTrafikBrand
+	context = {}
+	template = 'aplreport/laporan_trafik_brand.html'
+
+	def get(self, request):
+		form = self.form_laporan_trafik_brand()
+		self.context['form'] = form
+		return render(request, self.template, self.context)
+
+	def post(self, request):
+		form = self.form_laporan_trafik_brand(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			from_date = cd['from_date']
+			to_date = cd['to_date']
+			brands = cd['brand']
+			print(brands)
+
+			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
+			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
+			response = HttpResponse(content_type='text/csv')
+			response['Content-Disposition'] = 'attachment; filename="{}-{}.csv"'.format('Laporan Trafik Brand', datetime.datetime.now())
+
+			writer = csv.writer(response)
+
+			for brand in brands:
+				data_laporan_trafik_brand = TransactionDetail.objects.filter(invoice__invoice_date__range=(from_date, to_date), invoice__status__abbv='F', article_brand_name=brand.name).exclude(
+					invoice__in=Invoice.objects.filter(Q(billing__isnull=True)|Q(shipping__isnull=True)|Q(transactiondetail__isnull=True)))\
+					.values('invoice__invoice_date')\
+					.annotate(jumlah=Sum('quantity')).order_by('invoice__invoice_date')
+
+				data_laporan_trafik_brand = list(data_laporan_trafik_brand)
+
+				
+				writer.writerow(['Brand', 'Tanggal', 'Tingkat Penjualan'])
+
+				for data in data_laporan_trafik_brand:
+					writer.writerow([
+							brand.name,
+							data['invoice__invoice_date'],
+							data['jumlah'],
+						])
+				writer.writerow(['', '', ''])
+				writer.writerow(['', '', ''])
+
+			return response
+		
+		self.context['form'] = form
 
