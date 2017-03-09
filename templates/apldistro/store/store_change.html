@@ -2,68 +2,68 @@
 {% load widget_tweaks %}
 {% load thumbnail %}
 
-{% block title %}Store{% endblock %}
+{% block title %}Change Store{% endblock %}
 
-{% block heading %}Store{% endblock %}
+{% block heading %}Change Store{% endblock %}
 
 {% block content %}
 <div class="col-lg-8">
-            <form action="" method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.non_field_errors }}
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
 
-                <div class="form-group">
-                    <label for="{{ form.name.id_for_label }}">Store name:</label>
-                    {{ form.name|add_class:'form-control' }}
-                    {% if form.name.errors %}
-                        {% for error in form.name.errors %}
-                            <span class="help-block text-danger">{{ error|escape }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <div class="form-group">
+            <label for="{{ form.name.id_for_label }}">Store name:</label>
+            {{ form.name|add_class:'form-control' }}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-                <div class="form-group">
-                    <label for="{{ form.founding_date.id_for_label }}">Founding :</label>
-                    {{ form.founding_date|add_class:'form-control' }}
-                    {% if form.founding_date.errors %}
-                        {% for error in form.founding_date.errors %}
-                            <span class="help-block text-danger">{{ error|escape }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <div class="form-group">
+            <label for="{{ form.founding_date.id_for_label }}">Founding :</label>
+            {{ form.founding_date|add_class:'form-control' }}
+            {% if form.founding_date.errors %}
+                {% for error in form.founding_date.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-                <div class="form-group">
-                    <label for="{{ form.about.id_for_label }}">About distro (store):</label>
-                    {{ form.about|add_class:'form-control' }}
-                    {% if form.about.errors %}
-                        {% for error in form.about.errors %}
-                            <span class="help-block text-danger">{{ error|escape }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <div class="form-group">
+            <label for="{{ form.about.id_for_label }}">About distro (store):</label>
+            {{ form.about|add_class:'form-control' }}
+            {% if form.about.errors %}
+                {% for error in form.about.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-                <div class="form-group">
-                    <label for="{{ form.logo.id_for_label }}">logo:</label>
-                    {{ form.logo|add_class:'form-control' }}
-                    {% if form.logo.errors %}
-                        {% for error in form.logo.errors %}
-                            <span class="help-block text-danger">{{ error|escape }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <div class="form-group">
+            <label for="{{ form.logo.id_for_label }}">logo:</label>
+            {{ form.logo|add_class:'form-control' }}
+            {% if form.logo.errors %}
+                {% for error in form.logo.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-                <div class="form-group">
-                    <label for="{{ form.address.id_for_label }}">Address :</label>
-                    {{ form.address|add_class:'form-control' }}
-                    {% if form.address.errors %}
-                        {% for error in form.address.errors %}
-                            <span class="help-block text-danger">{{ error|escape }}</span>
-                        {% endfor %}
-                    {% endif %}
-                </div>
+        <div class="form-group">
+            <label for="{{ form.address.id_for_label }}">Address :</label>
+            {{ form.address|add_class:'form-control' }}
+            {% if form.address.errors %}
+                {% for error in form.address.errors %}
+                    <span class="help-block text-danger">{{ error|escape }}</span>
+                {% endfor %}
+            {% endif %}
+        </div>
 
-                <input type="submit" value="Save" class="btn btn-primary">
-            </form>
+        <input type="submit" value="Save" class="btn btn-primary">
+    </form>
 </div>
 
 <div class="col-lg-2">
@@ -71,6 +71,4 @@
         <img src="{{ im.url }}" class="img-thumbnail">
     {% endthumbnail %}
 </div>
-
 {% endblock %}
-

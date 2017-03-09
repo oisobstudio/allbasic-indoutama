@@ -3,21 +3,19 @@
 <html>
 <head>
 	<title>{% block title %}{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'todc/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'todc/css/todc-bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/todc-bootstrap.min.css' %}">
 	{% block css %}{% endblock %}
 </head>
 <body>
-
-
 	<div class="container-fluid">
 		<div class="row">
 		{% block content %}{% endblock %}
 		</div>
 	</div>
 
-	<script src="{% static 'todc/js/jquery.min.js' %}"></script>
-	<script src="{% static 'todc/js/bootstrap.min.js' %}"></script>
+	<script src="{% static 'bower_components/todc/js/jquery.min.js' %}"></script>
+	<script src="{% static 'bower_components/todc/js/bootstrap.min.js' %}"></script>
 	{% block js %}{% endblock %}
 </body>
 </html>

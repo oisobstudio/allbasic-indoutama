@@ -166,7 +166,15 @@
                 <td>{{ trandet.article_code }}</td>
                 <td>{{ trandet.article_name }}</td>
                 <td>{{ trandet.article_size }}</td>
-                <td>{{ trandet.article_price }}</td>
+                <td>
+                    {{ trandet.article_price }}
+                    {% if trandet.discount_code %}
+                    <small>
+                        <br> Discount 
+                        <br> {{ trandet.discount_name }} ({{ trandet.cut_price }}) per item
+                    </small>
+                    {% endif %}
+                </td>
                 <td>{{ trandet.quantity }}</td>
                 <td>{{ trandet.sub_total }}</td>
                 <td>

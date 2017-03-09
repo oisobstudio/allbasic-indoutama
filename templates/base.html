@@ -3,8 +3,8 @@
 <html>
 <head>
 	<title>{% block title %}{% endblock %}</title>
-	<link rel="stylesheet" type="text/css" href="{% static 'todc/css/bootstrap.min.css' %}">
-	<link rel="stylesheet" type="text/css" href="{% static 'todc/css/todc-bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/bootstrap.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/todc-bootstrap.min.css' %}">
 	{% block css %}{% endblock %}
 </head>
 <body>
@@ -47,9 +47,9 @@
 	</div>
 
 	{% include 'included/modal_about.html' %}
-	<script src="{% static 'todc/js/jquery.min.js' %}"></script>
-	<script src="{% static 'todc/js/bootstrap.min.js' %}"></script>
-	{% include "included/core/djax.html" %}
+	<script src="{% static 'bower_components/todc/js/jquery.min.js' %}"></script>
+	<script src="{% static 'bower_components/todc/js/bootstrap.min.js' %}"></script>
+	{% include "included/djax.html" %}
 	{% block js %}{% endblock %}
 </body>
 </html>

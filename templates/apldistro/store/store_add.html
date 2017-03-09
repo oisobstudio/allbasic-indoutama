@@ -4,10 +4,9 @@
 
 {% block title %}Store{% endblock %}
 
-{% block heading %}Store Add{% endblock %}
+{% block heading %}Add Store{% endblock %}
 
 {% block content %}
-
 <div class="col-lg-6">
     <form action="" method="post" enctype="multipart/form-data">
 
@@ -76,20 +75,4 @@
         <input type="submit" value="Save" class="btn btn-success">
     </form>
 </div>
-{% endblock %}
-
-{% block js %}
-<script>
-    // $(document).ready(function(){
-    //   var date_input=$('input[name="founding_date"]'); //our date input has the name "date"
-    //   var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-    //   var options={
-    //     format: 'yyyy-mm-dd',
-    //     container: container,
-    //     todayHighlight: true,
-    //     autoclose: true,
-    //   };
-    //   date_input.datepicker(options);
-    // })
-</script>
 {% endblock %}

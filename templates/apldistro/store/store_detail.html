@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load thumbnail %}
 
-{% block title %}Store{% endblock %}
+{% block title %}Detail Store{% endblock %}
 
-{% block heading %}Store{% endblock %}
+{% block heading %}Detail Store{% endblock %}
 
 {% block content %}
 
@@ -35,12 +35,11 @@
             </td>
             {% else %}
             <td colspan="7">
-                You have not added store, you can create store in
-                <a href="{% url 'apldistro:store_add' %}">New Store</a>
+                Anda belum menambahkan store, klik 
+                <a href="{% url 'apldistro:store_add' %}">New Store</a> untuk menambahkan store.
             </td>
             {% endif %}
         </tr>
     </table>
 </div>
-
 {% endblock %}

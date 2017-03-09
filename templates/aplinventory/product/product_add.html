@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load staticfiles %}
 {% load widget_tweaks %}
 
 {% block title %}Add Product{% endblock %}
@@ -37,13 +36,3 @@
 </div>
 {% endblock %}
 
-{% block script %}
-<script src="{% static 'sbadmin/vendor/coderain/coderain.js' %}"></script>
-<script>
-$('document').ready(function () {
-    var cr = new CodeRain("#####");
-    $('#id_code').val(cr.next());
-    $('#id_code').prop('readonly', true);
-});
-</script>
-{% endblock %}

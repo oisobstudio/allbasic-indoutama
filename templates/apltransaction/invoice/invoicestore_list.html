@@ -174,18 +174,18 @@
 
 {% block js %}
 <script type="text/javascript">
-    $(document).ready(function() {
-        $('input:checkbox[name=action_toggle]').change(function() {
-            $('input:checkbox[name=_selected_action]').not(this).prop('checked', this.checked);
-        });
-
-        $('#id_invoiceweb_print_all').click(function() {
-            $("#id_form_invoiceweb_print_all").submit();
-        });
-
-        $('#id_invoiceweb_change_status_process').click(function() {
-            $('#id_form_invoiceweb_print_all').attr('action', '{% url 'apltransaction:invoiceweb_change_status_process' %}').submit();
-        });
+$(document).ready(function() {
+    $('input:checkbox[name=action_toggle]').change(function() {
+        $('input:checkbox[name=_selected_action]').not(this).prop('checked', this.checked);
     });
+
+    $('#id_invoiceweb_print_all').click(function() {
+        $("#id_form_invoiceweb_print_all").submit();
+    });
+
+    $('#id_invoiceweb_change_status_process').click(function() {
+        $('#id_form_invoiceweb_print_all').attr('action', '{% url 'apltransaction:invoiceweb_change_status_process' %}').submit();
+    });
+});
 </script>
 {% endblock %}

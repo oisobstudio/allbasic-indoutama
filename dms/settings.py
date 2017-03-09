@@ -40,6 +40,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'sorl.thumbnail',
     'widget_tweaks',
+    
+)
+
+INSTALLED_APPS += (
     'aplbase',
     'aplhelper',
     'apldistro',
@@ -119,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
@@ -134,22 +139,9 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
-from django.core.urlresolvers import reverse_lazy, reverse
+# from django.core.urlresolvers import reverse_lazy, reverse
 
-LOGIN_REDIRECT_URL = reverse_lazy('apldashboard:home')
-LOGIN_URL = reverse_lazy('aplaccount:account_login')
-# LOGOUT_URL = reverse_lazy('logout')
-
-# CELERY STUFF
-BROKER_URL = 'redis://localhost:6379'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-# CELERY_TIMEZONE = 'Africa/Nairobi'
-
-
-RAJAONGKIR_KEYAPI = 'e1cf6651edafd48d8ed08c801213f2dd'
-RAJAONGKIR_STATE = {'id': 151, 'value': 'Jakarta Barat'}
-RAJAONGKIR_URL = 'api.rajaongkir.com'
+# LOGIN_REDIRECT_URL = reverse_lazy('apldashboard:home')
+# LOGIN_URL = reverse_lazy('aplaccount:account_login')
+# # LOGOUT_URL = reverse_lazy('logout')
 

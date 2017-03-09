@@ -170,7 +170,7 @@
 		document.getElementById('unique_payment_code_{{ invoice.invoice_number }}').innerHTML = unique_pricing
 		var grand_total = parseInt(unique_pricing) + parseInt(shipping_pricing) + parseInt(total_pricing);
 		document.getElementById('grand_total_{{ invoice.invoice_number }}').innerHTML = grand_total;
-
+		window.print();
 	</script>
 
 </div>

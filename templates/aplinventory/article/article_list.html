@@ -100,17 +100,4 @@
 <div class="col-md-12">
     {% include "aplinventory/article/pagination.html" with page=articles query=query %}
 </div>
-
-
-{% endblock %}
-
-{% block script %}
-    <script>
-       $("#id_article_name").each(function() {
-            $(this).addClass('text-primary');
-       })
-       $("#id_article_name").hover(function() {
-           $(this).css('cursor', 'pointer');
-       });
-    </script>
 {% endblock %}

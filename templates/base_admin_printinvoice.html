@@ -1,0 +1,118 @@
+{% load  staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bower_components/todc/css/todc-bootstrap.min.css' %}">
+
+    {% block style %}{% endblock %}
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style media="print">
+        a > .media-object {
+            visibility: visible;
+        }
+        a.btn {
+            display: none;
+        }
+
+        hr {
+            border: none;
+        }
+
+        .table {
+            border: none;
+        }
+
+        td  {
+            font-size: 10pt;
+            border: none;
+        }
+
+        hr {
+            border: 1px solid black;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+    {% block content %}
+
+    {% endblock %}
+</div> 
+
+    <!-- INVOICE WEB HEADER -->
+    <div class="container">
+        <div class="col-md-12">
+            {% block header_left %}{% endblock %}
+        </div>
+        <div class="col-md-12">
+            {% block header_right %}{% endblock %}
+        </div>
+    </div>
+
+    <br />
+
+        <div class="col-md-12">
+            {% block content_item %}
+            {% endblock %}
+        </div>
+
+    <br />
+    <!-- INVOICE WEB CONTENT BILLING -->
+
+        <div class="col-md-12">
+            {% block content_billing %}
+            {% endblock %}
+        </div>
+
+
+    <br />
+    <!-- INVOICE WEB CONTENT SHIPPING -->
+    <div class="container">
+        <div class="col-md-12">
+            {% block content_shipping %}
+            {% endblock %}
+        </div>
+    </div>
+
+    <br />
+    <!-- INVOICE WEB INFORMATION BANK -->
+    <div class="container">
+        <div class="col-md-12">
+            {% block content_company %}
+
+            {% endblock %}
+        </div>
+    </div>
+
+    <br />
+    <div class="container">
+        <a href="#" onclick="window.print();" class="btn btn-default"><i class="fa fa-print"></i> Print</a>
+        {% block additional_button %}{% endblock %}
+    </div>
+
+    <script src="{% static 'bower_components/todc/js/jquery.min.js' %}"></script>
+    <script src="{% static 'bower_components/todc/js/bootstrap.min.js' %}"></script>
+    {% block script %}{% endblock %}
+</body>
+</html>

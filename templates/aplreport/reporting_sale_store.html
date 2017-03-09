@@ -7,18 +7,21 @@
 
 {% block heading %}Reporting Sale Store{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.css' %}">
+{% endblock %}
+
 {% block content %}
-<br><br><br><br><br><br><br><br>
-<div class="col-md-12">
-    <form class="form-inline" method="post">
+<div class="col-md-6">
+    <form class="form" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="">From</label>
-            {{ form.from_date|add_class:'form-control input-lg' }}
+            {{ form.from_date|add_class:'form-control' }}
         </div>
         <div class="form-group">
             <label for="">To</label>
-            {{ form.to_date|add_class:'form-control input-lg' }}
+            {{ form.to_date|add_class:'form-control' }}
         </div>
         <button type="submit" class="btn btn-default">Show</button>
     </form>
@@ -26,23 +29,25 @@
 {% endblock %}
 
 {% block js %}
-    <script type="text/javascript" src="{% static 'sbadmin/dist/js/bootstrap-datepicker.min.js' %}"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var date_input_from_date = $('input[name="from_date"]'); //our date input has the name "date"
-            var date_input_to_date = $('input[name="to_date"]'); //our date input has the name "date"
-            var container = $('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-            var options={
-                format: 'yyyy-mm-dd',
-                container: container,
-                todayHighlight: true,
-                autoclose: true,
-                orientation: 'bottom'
-            };
-          
-            date_input_from_date.datepicker(options);
-            date_input_to_date.datepicker(options);
-        })
-    </script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var date_input_from_date = $('input[name="from_date"]'); //our date input has the name "date"
+        var date_input_to_date = $('input[name="to_date"]'); //our date input has the name "date"
+        var container = $('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            orientation: 'left bottom',
+            format: 'yyyy-mm-dd',
+            // container: container,
+            todayHighlight: true,
+            autoclose: true,
+            keyboardNavigation: true,
+            language: 'id',
+            rtl: false,
+        };
+      
+        date_input_from_date.datepicker(options);
+        date_input_to_date.datepicker(options);
+    });
+</script>
+<script type="text/javascript" src="{% static 'bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js' %}"></script>
 {% endblock %}

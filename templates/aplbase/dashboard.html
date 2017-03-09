@@ -5,16 +5,12 @@
 
 {% block heading %}Dashboard{% endblock %}
 
-{% block css %}
-
-<link rel="stylesheet" type="text/css" href="{% static 'datatables/css/dataTables.bootstrap.min.css' %}">
-{% endblock %}
-
 {% block content %}
 <div class="col-md-3">
 	<h4 style="margin-left: 50px;">Total Stock Article In Brand</h4>
 	<canvas height="400" style="width: auto;" id="dataset_total_article_by_brand"></canvas>
 </div>
+
 <div class="col-md-8">
 	<h4>Informasi Performa Admin</h4>
 	<table class="table table-striped table-condensed">
@@ -70,37 +66,10 @@
 	</table>
 </div>
 
-<br>
-<br>
-
-<!-- <div class="col-md-12">
-	<h4>Total Stock Article</h4>
-	<table id="id_dataset_total_article_in_brand_size" class="display table" cellspacing="0" width="100%">
-		<thead>
-            <tr>
-                <th>Brand</th>
-                <th>Article</th>
-                <th>Size</th>
-                <th>Available</th>
-            </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>Brand</th>
-                <th>Article</th>
-                <th>Size</th>
-                <th>Available</th>
-            </tr>
-        </tfoot>
-	</table>
-</div>
- -->
 {% endblock %}
 
 {% block js %}
 <script type="text/javascript" src="{% static 'bower_components/chart.js/Chart.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'datatables/js/jquery.dataTables.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'datatables/js/dataTables.bootstrap.min.js' %}"></script>
 
 <script>
 	var ctx_dataset_total_article_in_brand = document.getElementById('dataset_total_article_by_brand').getContext('2d')
@@ -124,26 +93,5 @@
 	};
 	
 	var barchart_dataset_total_article_in_brand = new Chart(ctx_dataset_total_article_in_brand).Bar(data_dataset_total_article_in_brand);
-</script>
-
-<script type="text/javascript">
-	// dataset = JSON.parse(" dataset_total_article_in_brand_size|escapejs ");
-	// console.log(dataset);
-
-	// $(document).ready(function() {
- //    $('#id_dataset_total_article_in_brand_size').DataTable( {
-	//         data: dataset,
-	//         columns: [
-	//             { title: "Brand" },
-	//             { title: "Article" },
-	//             { title: "Size" },
-	//             { title: "Available" },
-	//         ]
-	//     } );
-	// } );
-</script>
-
-<script type="text/javascript">
-
 </script>
 {% endblock %}

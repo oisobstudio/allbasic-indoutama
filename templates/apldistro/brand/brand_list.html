@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load thumbnail %}
 
-{% block title %}Brand List{% endblock %}
+{% block title %}Brand{% endblock %}
 
 {% block heading %}Brand{% endblock %}
 
@@ -40,9 +40,9 @@
             </td>
         </tr>
         {% empty %}
-                <tr>
-                    <td colspan="6">Please add new brand.</td>
-                </tr>
+        <tr>
+            <td colspan="6">Please add new brand.</td>
+        </tr>
         {% endfor %}
     </table>
 </div>
