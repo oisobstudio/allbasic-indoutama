@@ -750,13 +750,8 @@ def invoiceweb_print_all(request):
         # ambil semua invoice dalam bentuk list
         invoices_number = request.POST.getlist('_selected_action')
 
-        if request.user.is_superuser:
-            # ambil objek invoice
-            invoices = Invoice.objects.filter(invoice_number__in=invoices_number, 
-                category__abbv='W')
-        else:
-            invoices = Invoice.objects.filter(invoice_number__in=invoices_number, 
-                category__abbv='W', user=request.user)
+        invoices = Invoice.objects.filter(invoice_number__in=invoices_number, category__abbv='W')
+
         # mengecek apakah status valid..
         # valid berarti sudah berisi item, shipping dan billing.
         valid = True
