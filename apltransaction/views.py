@@ -441,7 +441,7 @@ def invoiceweb_list(request):
     if request.user.is_superuser:
         invoices = Invoice.objects.exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
     else:
-        invoices = Invoice.objects.distinct().filter(user=request.user, transactiondetail__article_brand_name=brand.name).exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
+        invoices = Invoice.objects.distinct().filter(transactiondetail__article_brand_name=brand.name).exclude(Q(transactiondetail=None)|Q(shipping=None)|Q(billing=None)).order_by('-invoice_date')
     form = FormSearchInvoice()
 
     # =================================
