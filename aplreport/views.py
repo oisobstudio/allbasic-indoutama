@@ -3,7 +3,7 @@ import csv
 import json
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Sum, Count, F, Q
+from django.db.models import Sum, Count, F, Q, Avg
 from django.http import HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import View
@@ -12,292 +12,271 @@ from apltransaction.models import InvoiceStatus, InvoiceCategory
 from apltransaction.models import Invoice, TransactionDetail
 from aplinventory.models import Article
 
-from .forms import FormReportSaleWebsite
-from .forms import FormReportAllSalePerdate
-from .forms import FormReportingSaleStore
-from .forms import FormReportingSaleWeb
-from .forms import FormReportingSaleArticle
-from .forms import FormLaporanArtikelDiminati
-from .forms import FormLaporanTrafikBrand
+from .forms import FormReportSalesGrow
+from .forms import FormReportSalesNet
+from .forms import FormReportInvoice
 
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 
+class ReportSalesGrow(View):
+	"""Laporan penjualan kotor dalam periode (no hold). 
+	(ada average gross daily + harganya dipisahin sama harga total shipping). 
+	harga ongkir juga digabung."""
+	form_report_sales_grow = FormReportSalesGrow
+	template = 'aplreport/report_sales_grow.html'
+	context = {}
 
-# def reporting_sale_store(request):
-# 	if request.method == 'POST':
-# 		form = FormReportingSaleStore(request.POST)
-# 		if form.is_valid():
-# 			cd = form.cleaned_data
-# 			from_date = cd['from_date']
-# 			to_date = cd['to_date']
+	def get(self, request):
+		form = self.form_report_sales_grow()
+		self.context['form'] = form
+		return render(request, self.template, self.context)
 
-# 			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
-# 			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
+	def post(self, request):
+		form = self.form_report_sales_grow(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
 
-# 			data_reports = TransactionDetail.objects.filter(
-# 				invoice__invoice_date__range=(from_date, to_date), invoice__category__abbv='S')
+			# Ambil tanggal from dan to
+			from_date = datetime.datetime.strptime(cd['from_date'], "%Y-%m-%d")
+			to_date = datetime.datetime.strptime(cd['to_date'], "%Y-%m-%d")
 
-# 			response = HttpResponse(content_type='text/csv')
-# 			response['Content-Disposition'] = 'attachment; filename="{}-{}-{}.csv"'.format(
-# 				"reporting_sale_store", from_date, to_date)
+			# Hitung data gross
+			data = self._calc_grow(from_date, to_date)
 
-# 			writer = csv.writer(response)
-# 			writer.writerow(['User', 'Invoice Number', 'Brand', 'Article Code', 'Article Name', 'Size', 'Price', 'Quantity', 'Sub Total'])
-# 			data_csv = []
-			
-# 			if data_reports:
-# 				for td in data_reports:
-# 					data_csv.append([
-# 						td.user, 
-# 						td.invoice.invoice_number, 
-# 						td.article_brand_name, 
-# 						td.article_code,
-# 						td.article_name,
-# 						td.article_size,
-# 						td.article_price,
-# 						td.quantity,
-# 						td.sub_total])
+			response = HttpResponse(content_type='text/csv')
+			response['Content-Disposition'] = 'attachment; filename="{}____{}-{}.csv"'.format(
+						"Report Sales Grow", from_date, to_date)
 
-# 				for data in data_csv:
-# 					writer.writerow(data)
+			# csv bagian header
+			writer = csv.writer(response)
 
-# 				return response
+			# Tulis csv untuk From dan To 
+			writer.writerow(['From', '', from_date])
+			writer.writerow(['To', '', to_date])
 
-# 		# TODO: Sending Email automatic after creating CSV
+			# Tulis csv untuk Total Gros
+			writer.writerow(['Total Gross', '', data['total_gross']])
+			writer.writerow(['Average', '', data['total_avg']])
+			writer.writerow([])
 
-# 	else:
-# 		form = FormReportingSaleStore()
-# 	return render(request, 'aplreport/reporting_sale_store.html', {'form': form})
+			# Tulis csv Date, Gross dan Shipping
+			writer.writerow(['Date', 'Gross', 'Shipping'])
 
+			for sales in data['sales_gross']:
+				row = [sales['invoice_date'], sales['total_gross'], sales['total_gross_shipping']]
+				writer.writerow(row)
 
-# def reporting_sale_web(request):
-# 	if request.method == 'POST':
-# 		form = FormReportingSaleWeb(request.POST)
-# 		if form.is_valid():
-# 			cd = form.cleaned_data
-# 			from_date = cd['from_date']
-# 			to_date = cd['to_date']
+			return response
 
-# 			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
-# 			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
+		self.context['form'] = form
+		return render(request, self.template, self.context)
 
-# 			data_reports = TransactionDetail.objects.filter(
-# 				invoice__invoice_date__range=(from_date, to_date), invoice__category__abbv='W', ).exclude(
-# 				invoice__billing=None, invoice__shipping=None).order_by('-user__username', '-invoice__status__abbv')
-
-# 			total = data_reports.aggregate(Sum('sub_total'))
-
-
-# 			response = HttpResponse(content_type='text/csv')
-# 			response['Content-Disposition'] = 'attachment; filename="{}-{}-{}.csv"'.format(
-# 				"reporting_sale_web", from_date, to_date)
-
-# 			writer = csv.writer(response)
-# 			writer.writerow(['Penanggung Jawab', 'Status', 'Nomer Invoice', 'Brand', 'Kode Artikel', 'Nama Artikel', 'Ukuran', 'Harga', 'Banyak', 'Sub Total'])
-# 			data_csv = []
-			
-# 			if data_reports:
-# 				for td in data_reports:
-# 					data_csv.append([
-# 						td.user, 
-# 						"({}) - {}".format(td.invoice.status.abbv, td.invoice.status.info),
-# 						"inv: {}".format(td.invoice.invoice_number), 
-# 						td.article_brand_name, 
-# 						"art: {}".format(td.article_code),
-# 						td.article_name,
-# 						td.article_size,
-# 						td.article_price,
-# 						td.quantity,
-# 						td.sub_total])
-
-# 				for data in data_csv:
-# 					writer.writerow(data)
-
-# 				print(total)
-# 				writer.writerow(['Total', '', '', '', '', '', '', '', '', total['sub_total__sum']])
-# 				return response
-
-# 		# TODO: Sending Email automatic after creating CSV
-
-# 	else:
-# 		form = FormReportingSaleStore()
-# 	return render(request, 'aplreport/reporting_sale_web.html', {'form': form})
+	def _calc_grow(self, from_date, to_date):
+		gross = Invoice.objects.filter(
+			category__abbv='W', 
+			invoice_date__range=(from_date, to_date))\
+		.exclude(
+			transactiondetail=None,
+			billing=None,
+			shipping=None,
+			status__abbv='H'
+		)
 
 
-# def reporting_sale_article(request):
-# 	if request.method == 'POST':
-# 		form = FormReportingSaleArticle(request.POST)
-# 		if form.is_valid():
-# 			cd = form.cleaned_data
-# 			from_date = cd['from_date']
-# 			to_date = cd['to_date']
-
-# 			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
-# 			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
-
-# 			data_reports = TransactionDetail.objects.filter(invoice__invoice_date__range=(from_date, to_date)).values('article_name', 'user__username').annotate(Count('article_name'))
-
-# 			response = HttpResponse(content_type='text/csv')
-# 			response['Content-Disposition'] = 'attachment; filename="{}___{}___{}.csv"'.format(
-# 				"reporting_sale_article", from_date, to_date)
-
-# 			writer = csv.writer(response)
-# 			writer.writerow(['Penanggung Jawab', 'Artikel', 'Total Barang Keluar'])
-# 			data_csv = []
-			
-# 			if data_reports:
-# 				for td in data_reports:
-# 					data_csv.append([
-# 						td['user__username'], 
-# 						td['article_name'], 
-# 						td['article_name__count']])
-
-# 				for data in data_csv:
-# 					writer.writerow(data)
-
-# 				return response
-
-# 		# TODO: Sending Email automatic after creating CSV
-
-# 	else:
-# 		form = FormReportingSaleStore()
-# 	return render(request, 'aplreport/reporting_sale_article.html', {'form': form})
-
-
-# class ReportingStockArticle(View):
-
-# 	def get(self, request):
-# 		response = HttpResponse(content_type='text/csv')
-# 		response['Content-Disposition'] = 'attachment; filename="{}-{}.csv"'.format('reporting_stock_article', datetime.datetime.now())
-# 		dataset = self._make_dataset()
-# 		return self._make_csv(dataset, response)
-
-# 	def post(self, request):
-# 		return self.get(request)
-
-# 	def _make_csv(self, dataset, response):
-# 		writer = csv.writer(response)
-# 		writer.writerow(['Brand', 'Article', 'Stock'])
-# 		brand_name = None
-# 		stock_out = 0
-# 		for data in dataset:
-# 			if brand_name:
-# 				if brand_name != data['brand__name']:
-# 					writer.writerow(['','',''])
-# 					writer.writerow(['Brand', 'Article', 'Stock'])
-# 					brand_name = data['brand__name']
-					
-# 			else:
-# 				brand_name = data['brand__name']
-
-# 			writer.writerow([data['brand__name'], data['name'], data['sum_stock']])
-			
-
-# 		return response
-
-# 	def _make_dataset(self):
-# 		dataset = Article.objects.values('brand__name', 'name').\
-# 							annotate(sum_stock=Sum('articledetail__stock')).\
-# 							order_by('-brand__name')
-
-# 		return dataset
-
-
-# class LaporanArtikelDiminati(View):
-# 	form_laporan_artikel_diminati = FormLaporanArtikelDiminati
-# 	context = {}
-# 	template = 'aplreport/laporan_artikel_diminati.html'
-
-# 	def get(self, request):
-# 		form = self.form_laporan_artikel_diminati()
-# 		self.context['form'] = form
-# 		return render(request, self.template, self.context)
-
-# 	def post(self, request):
-# 		form = self.form_laporan_artikel_diminati(request.POST)
-# 		if form.is_valid():
-# 			cd = form.cleaned_data
-# 			from_date = cd['from_date']
-# 			to_date = cd['to_date']
-
-# 			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
-# 			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
-
-# 			data_laporan_artikel_diminati = TransactionDetail.objects.filter(invoice__invoice_date__range=(from_date, to_date)).exclude(
-# 				invoice__in=Invoice.objects.filter(Q(billing__isnull=True)|Q(shipping__isnull=True)|Q(transactiondetail__isnull=True)))\
-# 				.values('article_brand_name', 'article_name')\
-# 				.annotate(jumlah_pembelian=Sum('quantity')).order_by('-article_brand_name')
-
-# 			data_laporan_artikel_diminati = list(data_laporan_artikel_diminati)
-
-# 			response = HttpResponse(content_type='text/csv')
-# 			response['Content-Disposition'] = 'attachment; filename="{}-{}.csv"'.format('Laporan Artikel Yang Diminati', datetime.datetime.now())
-
-# 			writer = csv.writer(response)
-# 			writer.writerow(['Nama Brand', 'Nama Artikel', 'Jumlah Pembelian'])
-
-# 			for data in data_laporan_artikel_diminati:
-# 				writer.writerow([
-# 						data['article_brand_name'],
-# 						data['article_name'],
-# 						data['jumlah_pembelian'],
-# 					])
-
-# 			return response
+		# hitung total gross keseluruhan
+		total_gross = gross.values('invoice_date')\
+			.aggregate(total_gross=Sum("total"), total_gross_shipping=Sum("shipping__price"))
+		total_gross = total_gross['total_gross'] + total_gross['total_gross_shipping']
 		
-# 		self.context['form'] = form
+		# Hitung rata-rata
+		total_avg = gross.values('invoice_date').annotate(total_gross=Sum('total'), total_gross_shipping=Sum('shipping__price'))\
+			.aggregate(total_avg=Avg("total_gross"), total_shipping_avg=Avg('total_gross_shipping'))
+		print(total_avg)
+		total_avg = total_avg['total_avg'] + total_avg['total_shipping_avg']
+
+		# Hitung penjualan kotor
+		sales_gross = gross.values('invoice_date').annotate(total_gross=Sum('total'), total_gross_shipping=Sum('shipping__price'))
+
+		data = {
+			'total_gross': total_gross,
+			'total_avg': total_avg,
+			'sales_gross': sales_gross
+		}
+
+		return data
 
 
-# class LaporanTrafikBrand(View):
-# 	form_laporan_trafik_brand = FormLaporanTrafikBrand
-# 	context = {}
-# 	template = 'aplreport/laporan_trafik_brand.html'
+class ReportSalesNet(View):
+	"""Laporan Penjualan Bersih (no hold). 
+	(ada average gross daily + harganya dipisahin sama harga total shipping). 
+	harga ongkir tidak digabung. soalnya harga net sale itu harga total 
+	invoice yang tidak dihitung dengan harga ongkir."""
+	form_report_sales_grow = FormReportSalesNet
+	template = 'aplreport/report_sales_net.html'
+	context = {}
 
-# 	def get(self, request):
-# 		form = self.form_laporan_trafik_brand()
-# 		self.context['form'] = form
-# 		return render(request, self.template, self.context)
+	def get(self, request):
+		form = self.form_report_sales_grow()
+		self.context['form'] = form
+		return render(request, self.template, self.context)
 
-# 	def post(self, request):
-# 		form = self.form_laporan_trafik_brand(request.POST)
-# 		if form.is_valid():
-# 			cd = form.cleaned_data
-# 			from_date = cd['from_date']
-# 			to_date = cd['to_date']
-# 			brands = cd['brand']
-# 			print(brands)
+	def post(self, request):
+		form = self.form_report_sales_grow(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
 
-# 			from_date = datetime.datetime.strptime(from_date, "%Y-%m-%d")
-# 			to_date = datetime.datetime.strptime(to_date, "%Y-%m-%d")
-# 			response = HttpResponse(content_type='text/csv')
-# 			response['Content-Disposition'] = 'attachment; filename="{}-{}.csv"'.format('Laporan Trafik Brand', datetime.datetime.now())
+			# Ambil tanggal from dan to
+			from_date = datetime.datetime.strptime(cd['from_date'], "%Y-%m-%d")
+			to_date = datetime.datetime.strptime(cd['to_date'], "%Y-%m-%d")
 
-# 			writer = csv.writer(response)
+			# Hitung data gross
+			data = self._calc_net(from_date, to_date)
 
-# 			for brand in brands:
-# 				data_laporan_trafik_brand = TransactionDetail.objects.filter(invoice__invoice_date__range=(from_date, to_date), invoice__status__abbv='F', article_brand_name=brand.name).exclude(
-# 					invoice__in=Invoice.objects.filter(Q(billing__isnull=True)|Q(shipping__isnull=True)|Q(transactiondetail__isnull=True)))\
-# 					.values('invoice__invoice_date')\
-# 					.annotate(jumlah=Sum('quantity')).order_by('invoice__invoice_date')
+			response = HttpResponse(content_type='text/csv')
+			response['Content-Disposition'] = 'attachment; filename="{}____{}-{}.csv"'.format(
+						"Report Sales Grow", from_date, to_date)
 
-# 				data_laporan_trafik_brand = list(data_laporan_trafik_brand)
+			# csv bagian header
+			writer = csv.writer(response)
 
-				
-# 				writer.writerow(['Brand', 'Tanggal', 'Tingkat Penjualan'])
+			# Tulis csv untuk From dan To 
+			writer.writerow(['From', '', from_date])
+			writer.writerow(['To', '', to_date])
 
-# 				for data in data_laporan_trafik_brand:
-# 					writer.writerow([
-# 							brand.name,
-# 							data['invoice__invoice_date'],
-# 							data['jumlah'],
-# 						])
-# 				writer.writerow(['', '', ''])
-# 				writer.writerow(['', '', ''])
+			# Tulis csv untuk Total Gros
+			writer.writerow(['Total Net', '', data['total_net']])
+			writer.writerow(['Average', '', data['total_avg']])
+			writer.writerow([])
 
-# 			return response
+			# Tulis csv Date, Gross dan Shipping
+			writer.writerow(['Date', 'Net', 'Shipping'])
+
+			for sales in data['sales_net']:
+				row = [sales['invoice_date'], sales['total_net'], sales['total_shipping']]
+				writer.writerow(row)
+
+			return response
+
+		self.context['form'] = form
+		return render(request, self.template, self.context)
+
+	def _calc_net(self, from_date, to_date):
+		nets = Invoice.objects.filter(
+			category__abbv='W', 
+			invoice_date__range=(from_date, to_date))\
+		.exclude(
+			transactiondetail=None,
+			billing=None,
+			shipping=None,
+			status__abbv='H'
+		)
+
+		# hitung total gross keseluruhan
+		total_net = nets.values('invoice_date')\
+			.aggregate(total_net=Sum("total"))
+		total_net = total_net['total_net']
 		
-# 		self.context['form'] = form
+		# Hitung rata-rata
+		total_avg = nets.values('invoice_date').annotate(total_net=Sum('total'))\
+			.aggregate(total_avg=Avg("total_net"))
+		total_avg = total_avg['total_avg']
+
+		# Hitung penjualan kotor
+		sales_net = nets.values('invoice_date').annotate(total_net=Sum('total'), total_shipping=Sum('shipping__price'))
+
+		data = {
+			'total_net': total_net,
+			'total_avg': total_avg,
+			'sales_net': sales_net
+		}
+
+		return data
+
+
+class ReportInvoice(View):
+	'''Laporan invoice yang masuk (not hold).'''
+	form_report_invoice = FormReportInvoice
+	template = 'aplreport/report_invoice.html'
+	context = {}
+
+	def get(self, request):
+		form = self.form_report_invoice()
+		self.context['form'] = form
+		return render(request, self.template, self.context)
+
+	def post(self, request):
+		form = self.form_report_invoice(request.POST)
+		if form.is_valid():
+			cd = form.cleaned_data
+			# Ambil tanggal mulai sampai tanggal akhir
+			from_date = datetime.datetime.strptime(cd['from_date'], "%Y-%m-%d")
+			to_date = datetime.datetime.strptime(cd['to_date'], "%Y-%m-%d")
+
+			# Hitung banyak invoice yang dikelompokan berdasarkan tanggal...
+			data = self._calc(from_date, to_date)
+
+			response = HttpResponse(content_type='text/csv')
+			response['Content-Disposition'] = 'attachment; filename="{}____{}-{}.csv"'.format(
+						"Report Invoice", from_date, to_date)
+			writer = csv.writer(response)
+
+			# Tulis csv untuk From dan To 
+			writer.writerow(['From', from_date])
+			writer.writerow(['To', to_date])
+
+			# Tulis csv untuk Total Gros
+			writer.writerow(['Total Invoice', data['total_invoices_perdate']])
+			writer.writerow([])
+
+			# Tulis csv Date, Gross dan Shipping
+			writer.writerow(['Date', 'Total Invoice per Date'])
+
+			for sales in data['invoices_perdate']:
+				row = [sales['invoice_date'], sales['total_invoice']]
+				writer.writerow(row)
+
+			return response
+
+		self.context['form'] = form
+		return render(request, self.template, self.context)
+
+	def _calc(self, from_date, to_date):
+		invoices = Invoice.objects.filter(category__abbv='W', invoice_date__range=(from_date, to_date))\
+			.exclude(
+				transactiondetail=None,
+				billing=None,
+				shipping=None,
+			)
+
+		# Hitung jumlah invoice yang dibuat yang dikelompokan berdasarkan tanggalnya
+		invoices_perdate = invoices.values('invoice_date').annotate(total_invoice=Count('invoice_number'))
+		total_invoices_perdate = invoices.aggregate(total_invoice=Count('invoice_number'))
+
+		return {
+			'invoices_perdate': invoices_perdate,
+			'total_invoices_perdate': total_invoices_perdate['total_invoice']
+		}
+
+
+class ReportArticle(View):
+	"""Laporan Barapa Artikel yang keluar (not hold)."""
+
+	def get(self, request):
+		pass
+
+	def post(self, request):
+		pass
+
+
+class ReportShipping(View):
+	"""Laporan ongkir (no hold)."""
+
+	def get(self, request):
+		pass
+
+	def post(self, request):
+		pass
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load staticfiles %}
 {% load widget_tweaks %}
 
 {% block title %}Invoice In Web{% endblock %}
@@ -259,6 +260,7 @@
 
 
 {% block js %}
+
 <script type="text/javascript">
     $(document).ready(function() {
         $('input:checkbox[name=action_toggle]').change(function() {
@@ -306,4 +308,5 @@
         });
     });
 </script>
+
 {% endblock %}

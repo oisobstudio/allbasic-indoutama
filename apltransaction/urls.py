@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from . import views
+from . import views, ajax_views
 
 urlpatterns = [
 
@@ -17,6 +17,7 @@ urlpatterns = [
 
     # Invoice Web URL
     url(r'^invoice/web\.html$', views.invoiceweb_list, name='invoiceweb_list'),
+    url(r'^ajax/invoice/web\.html$', ajax_views.AjaxInvoiceWebList.as_view(), name='ajax_invoice_web_list'),
     url(r'^invoice/web/add\.html$', views.invoiceweb_add, name='invoiceweb_add'),
     url(r'^invoice/web/(?P<invoice_number>[\w\-]+)/remove\.html$', views.invoiceweb_remove, name='invoiceweb_remove'),
     url(r'^invoice/web/(?P<invoice_number>[\w\-]+)/print\.html$', views.invoiceweb_print, name='invoiceweb_print'),

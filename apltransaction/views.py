@@ -435,6 +435,7 @@ def transactiondetailstore_remove(request, invoice_number, article_code):
 ## ======================================================================================
 ##                                  INVOICE WEB
 ## ======================================================================================
+
 @connecting_brand_required
 def invoiceweb_list(request):
     brand = helper_session_brand_pk(request)
