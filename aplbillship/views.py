@@ -9,6 +9,10 @@ from .models import Billing, Shipping
 from .forms import FormAddBilling
 from .forms import FormAddShipping
 
+# ===================
+# dataresource module
+# ===================
+from dataresource.models import HoldTarget
 
 
 def billing_add(request, invoice_number):
@@ -20,6 +24,17 @@ def billing_add(request, invoice_number):
             billing.code = helper_generate_code()
             billing.invoice = invoice
             billing.save()
+
+            # Hold Target
+            # -----------
+            try:
+                hold_target = HoldTarget.objects.get(invoice_number=invoice.invoice_number)
+                current_state = hold_target.state
+                hold_target.state = current_state + 1
+                hold_target.save()
+            except:
+                pass
+
             data_context_kwargs = {'invoice_number': invoice_number}
             return HttpResponseRedirect(reverse('apltransaction:transactiondetailweb_add', kwargs=data_context_kwargs))
     else:
@@ -27,7 +42,6 @@ def billing_add(request, invoice_number):
 
     data_context = {'invoice': invoice, 'form': form}
     return render(request, 'aplbillship/billing/billing_add.html', data_context)
-
 
 
 def billing_remove(request, invoice_number, code):
@@ -52,6 +66,16 @@ def shipping_add(request, invoice_number):
             shipping.invoice = invoice
             shipping.save()
             data_context_kwargs = {'invoice_number': invoice_number}
+            # Hold Target
+            # -----------
+            try:
+                hold_target = HoldTarget.objects.get(invoice_number=invoice.invoice_number)
+                current_state = hold_target.state
+                hold_target.state = current_state + 1
+                hold_target.save()
+            except:
+                pass
+
             return HttpResponseRedirect(reverse('apltransaction:transactiondetailweb_add', kwargs=data_context_kwargs))
     else:
         form = FormAddShipping()

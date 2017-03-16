@@ -7,6 +7,7 @@ import json
 from aplinventory.models import Article, ArticleDetail
 from apltransaction.models import Invoice, TransactionDetail
 
+from dataresource.models import HoldTarget
 
 class Dashboard(View):
 	template = 'aplbase/dashboard.html'
@@ -17,7 +18,15 @@ class Dashboard(View):
 		self._dataset_total_article_by_size()
 		self._dataset_sale_admin_performance()
 		self._dataset_informasi_invalid_invoice()
+		self._dataset_hold_target()
+
 		return render(request, self.template, self.data_context)
+
+	def _dataset_hold_target(self):
+		# Hold Target
+		# -----------
+		data = HoldTarget.objects.filter(state=4).values('user__username').annotate(total_target=Count('record_date'))
+		self.data_context['dataset_hold_target'] = data
 
 	def _dataset_total_article_by_brand(self):
 		total_article_by_brand = ArticleDetail.objects.values_list('brand__name').\

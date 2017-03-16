@@ -21,6 +21,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 
 
+from dataresource.models import HoldTarget
+
 class ReportSalesGrow(View):
 	"""Laporan penjualan kotor dalam periode (no hold). 
 	(ada average gross daily + harganya dipisahin sama harga total shipping). 
@@ -259,6 +261,36 @@ class ReportInvoice(View):
 			'invoices_perdate': invoices_perdate,
 			'total_invoices_perdate': total_invoices_perdate['total_invoice']
 		}
+
+
+class ReportHoldTarget(View):
+
+	def get(self, request):
+		param = request.GET.get('username')
+		response = HttpResponse(content_type='text/csv')
+		response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format("Report Admin Target")
+		if param:
+			writer = csv.writer(response)
+
+			hold_target = HoldTarget.objects.filter(user__username=param).first()
+			total_target = HoldTarget.objects.filter(user__username=param, state=4).aggregate(total_target=Count('record_date'))
+			writer.writerow(['Admin', param])
+			writer.writerow(['Total Semua Target Pencapaian', total_target['total_target']])
+			writer.writerow(['',''])
+			writer.writerow(['Per Tanggal', 'Jumlah Target yang Dicapai'])
+
+			dataset = self._calc(hold_target.user)
+
+			for data in dataset:
+				writer.writerow([data['record_date'], data['total_target']])
+
+			return response
+		else:
+			return HttpResponse()
+
+	def _calc(self, user):
+		dataset = HoldTarget.objects.filter(user=user, state=4).values('record_date').annotate(total_target=Count('record_date'))
+		return dataset
 
 
 class ReportArticle(View):

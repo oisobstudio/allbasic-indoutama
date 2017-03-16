@@ -49,6 +49,11 @@ from apldistro.models import Profile, Store, Brand
 from aplbillship.models import Billing, Shipping
 from apltransaction.models import InvoiceStatus
 
+# ===================
+# dataresource module
+# ===================
+from dataresource.models import HoldTarget
+
 
 
 ## =============================================================================
@@ -497,6 +502,11 @@ def invoiceweb_add(request):
 
     invoice.save()
 
+    # Hold Target
+    # -----------
+    hold_target = HoldTarget(user=invoice.user, invoice_number=invoice.invoice_number, state=1)
+    hold_target.save()
+
     return HttpResponseRedirect(reverse('apltransaction:transactiondetailweb_add',
                                         kwargs={'invoice_number':invoice.invoice_number}))
 
@@ -533,6 +543,14 @@ def invoiceweb_remove(request, invoice_number):
                 article.save()
             except:
                 pass
+
+    # Hold target
+    # -----------
+    try:
+        hold_target = HoldTarget.objects.get(invoice_number=invoice.invoice_number)
+        hold_target.delete()
+    except:
+        pass
 
     # setelah pengembalian stock selesai atau bahkan tidak ada
     # yang dikembalikan sama sekali, hapus invoice.
@@ -910,6 +928,16 @@ def transactiondetailweb_add(request, invoice_number):
 
                         # simpan kembali invoice
                         invoice.save()
+
+                    # Hold Target
+                    # -----------
+                    try:
+                        hold_target = HoldTarget.objects.get(invoice_number=invoice.invoice_number)
+                        current_state = hold_target.state
+                        hold_target.state = current_state + 1
+                        hold_target.save()
+                    except:
+                        pass
 
                     return HttpResponseRedirect(reverse('apltransaction:transactiondetailweb_add', kwargs={'invoice_number': invoice_number}))
         else:

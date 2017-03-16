@@ -52,6 +52,7 @@ INSTALLED_APPS += (
     'aplreport',
     'aplbillship',
     'aplpromotion',
+    'dataresource',
 )
 
 
