@@ -64,7 +64,9 @@
 
 {% block content %}
 <div class="container">
-	<p class="text-center" id="action"><a href="{% url 'apltransaction:invoiceweb_list' %}">back</a> | <a href="#" onclick="window.print();">print</a></p>
+	<p class="text-center" id="action">
+		<a href="{% url 'apltransaction:invoiceweb_list' %}">back</a> | <a href="#" onclick="window.print();">print</a>
+	</p>
 </div>
 
 {% for invoice in invoices %}
@@ -104,12 +106,17 @@
 					
 
 					{% if item.discount_code %}
-					[{{ forloop.counter }}]. {{ item.article_name }} x {{ item.quantity }} @ IDR {{ item.article_price }}
-                    <small>
-                    <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cut Pricing <i>{{ item.discount_name }}</i>. IDR {{ item.cut_price }}    
-                    </small>
+						[{{ forloop.counter }}]. {{ item.article_name }} 
+						<small>({{ item.article_size }})</small> x {{ item.quantity }}
+						@ IDR {{ item.article_price }}
+                    	<small>
+                    		<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    			 Cut Pricing <i>{{ item.discount_name }}</i>. IDR {{ item.cut_price }}    
+                    	</small>
                     {% else %}
-                    [{{ forloop.counter }}]. {{ item.article_name }} x {{ item.quantity }} @ IDR {{ item.article_price }}<br>
+                    	[{{ forloop.counter }}]. {{ item.article_name }} 
+						<small>({{ item.article_size }})</small> x {{ item.quantity }}
+						@ IDR {{ item.article_price }}<br>
                 	{% endif %}
 				{% endfor %}
 

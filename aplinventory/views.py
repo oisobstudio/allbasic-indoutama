@@ -153,8 +153,6 @@ class SizeList(View):
     def dispatch(self, *args, **kwargs):
         return super(SizeList, self).dispatch(*args, **kwargs)
 
-    
-
 
 @connecting_brand_required
 def size_list(request):
@@ -312,7 +310,6 @@ def product_list(request):
         products = paginator.page(1)
     except EmptyPage:
         products = paginator.page(paginator.num_pages)
-
 
     data_context = {'products': products, 'query': query, 'form': form} 
     return render(request, 'aplinventory/product/product_list.html', data_context)
